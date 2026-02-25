@@ -45,7 +45,7 @@ target_link_libraries(i2c_stm32h7_common INTERFACE i2c_core)
 
 # ---------------------------------------------------------------------------
 # INTERFACE library: i2c_stm32h7_ll
-# STM32H7 LL backend skeleton (header-only; bodies to be added later).
+# STM32H7 LL backend – header-only portion (template declarations).
 # ---------------------------------------------------------------------------
 add_library(i2c_stm32h7_ll INTERFACE)
 target_include_directories(i2c_stm32h7_ll INTERFACE ${REPO_ROOT})
@@ -53,6 +53,37 @@ target_link_libraries(i2c_stm32h7_ll INTERFACE
     i2c_stm32h7_common
     i2c_policy
     i2c_wait)
+
+# ---------------------------------------------------------------------------
+# STATIC library: i2c_stm32h7_ll_impl
+# STM32H7 LL backend polling implementation.
+#
+# Requires vendor headers provided via external/:
+#   external/cmsis/inc  – stm32h7xx.h and CMSIS core
+#   external/ll/inc     – stm32h7xx_ll_i2c.h, stm32h7xx_ll_gpio.h, etc.
+#
+# Set STM32H750xx (or STM32H743xx) via the build system or IDE preprocessor
+# definitions.  See docs/deps/stm32cube_external_layout.md for details.
+#
+# This target is excluded from the default host build when vendor headers are
+# absent.  Enable it by setting I2C_LL_VENDOR_HEADERS_AVAILABLE=ON.
+# ---------------------------------------------------------------------------
+option(I2C_LL_VENDOR_HEADERS_AVAILABLE
+    "Set to ON when external/ vendor headers are present to compile i2c_stm32h7_ll_impl"
+    OFF)
+
+if(I2C_LL_VENDOR_HEADERS_AVAILABLE)
+    add_library(i2c_stm32h7_ll_impl STATIC
+        drivers/i2c/backend/stm32h7/ll/src/i2c_ll_backend.cpp
+        drivers/i2c/backend/stm32h7/ll/src/i2c_ll_irq_glue.cpp)
+    target_include_directories(i2c_stm32h7_ll_impl PUBLIC
+        ${REPO_ROOT}
+        ${REPO_ROOT}/external/cmsis/inc
+        ${REPO_ROOT}/external/ll/inc)
+    target_link_libraries(i2c_stm32h7_ll_impl PUBLIC
+        i2c_stm32h7_ll
+        board_rev_a)
+endif()
 
 # ---------------------------------------------------------------------------
 # INTERFACE library: i2c_stm32h7_hal
@@ -103,9 +134,9 @@ target_include_directories(system_init PUBLIC ${REPO_ROOT})
 # EXECUTABLE: app
 # Application entry point.
 #
-# NOTE: This target compiles the scaffolding headers but will NOT link until
-#       the backend method bodies (LlBackend::init/write/read/…) are provided.
-#       It is included here as a compile-time correctness check.
+# NOTE: This target compiles the scaffolding headers for a correctness check.
+#       Full linking requires i2c_stm32h7_ll_impl (enable with
+#       -DI2C_LL_VENDOR_HEADERS_AVAILABLE=ON and vendor headers in external/).
 # ---------------------------------------------------------------------------
 add_executable(app app/src/main.cpp)
 target_include_directories(app PRIVATE ${REPO_ROOT})
