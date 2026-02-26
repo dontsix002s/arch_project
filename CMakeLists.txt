@@ -76,7 +76,8 @@ if(I2C_LL_VENDOR_HEADERS_AVAILABLE)
     add_library(i2c_stm32h7_ll_impl STATIC
         drivers/i2c/backend/stm32h7/ll/src/i2c_ll_backend.cpp
         drivers/i2c/backend/stm32h7/ll/src/i2c_ll_irq_glue.cpp
-        board/rev_a/src/board_system_timer_stm32h7_ll.cpp)
+        board/rev_a/src/board_system_timer_stm32h7_ll.cpp
+        board/rev_a/src/board_clock_stm32h7_ll.cpp)
     target_include_directories(i2c_stm32h7_ll_impl PUBLIC
         ${REPO_ROOT}
         ${REPO_ROOT}/external/cmsis/inc
@@ -84,7 +85,8 @@ if(I2C_LL_VENDOR_HEADERS_AVAILABLE)
     target_link_libraries(i2c_stm32h7_ll_impl PUBLIC
         i2c_stm32h7_ll
         board_rev_a
-        system_timer)
+        system_timer
+        system_clocks)
 endif()
 
 # ---------------------------------------------------------------------------
@@ -133,6 +135,13 @@ add_library(system_init STATIC system/src/system_init.cpp)
 target_include_directories(system_init PUBLIC ${REPO_ROOT})
 
 # ---------------------------------------------------------------------------
+# STATIC library: system_clocks
+# System clock snapshot (system::clocks::get/set/reset_defaults).
+# ---------------------------------------------------------------------------
+add_library(system_clocks STATIC system/src/system_clocks.cpp)
+target_include_directories(system_clocks PUBLIC ${REPO_ROOT})
+
+# ---------------------------------------------------------------------------
 # INTERFACE library: system_timer
 # Portable system timer abstraction (header-only template).
 # ---------------------------------------------------------------------------
@@ -157,7 +166,7 @@ add_library(board_rev_a_src STATIC
     board/rev_a/src/board_init.cpp
     board/rev_a/src/board_timebase.cpp)
 target_include_directories(board_rev_a_src PUBLIC ${REPO_ROOT})
-target_link_libraries(board_rev_a_src PUBLIC board_rev_a system_timer)
+target_link_libraries(board_rev_a_src PUBLIC board_rev_a system_timer system_clocks)
 
 # ---------------------------------------------------------------------------
 # EXECUTABLE: app
@@ -171,6 +180,7 @@ add_executable(app app/src/main.cpp)
 target_include_directories(app PRIVATE ${REPO_ROOT})
 target_link_libraries(app PRIVATE
     system_init
+    system_clocks
     board_bsp
     board_rev_a_src
     ft6236)
