@@ -27,41 +27,56 @@
 
 #include <cstdint>
 
-namespace system {
+namespace system
+{
+    /// System timer façade parameterised by a hardware Traits type.
+    ///
+    /// @tparam Traits  Hardware-specific traits (tick_hz, hw_init, hw_refresh).
+    /// 
 
-/// System timer façade parameterised by a hardware Traits type.
-///
-/// @tparam Traits  Hardware-specific traits (tick_hz, hw_init, hw_refresh).
-template <typename Traits>
-class SystemTimer {
-public:
-    static constexpr uint32_t tick_hz = Traits::tick_hz;
+    template <typename Traits>
+    class SystemTimer
+    {
+    public:
+        static constexpr uint32_t tick_hz = Traits::tick_hz;
 
-    static void init() {
-        tick_count_ = 0U;
-        Traits::hw_init();
-    }
+        //---------------------------------------------------------------------
+        //  init()
+        //---------------------------------------------------------------------
+        static void init()
+        {
+            m_tick_count = 0U;
+            Traits::hw_init();
+        }
 
-    /// Optional maintenance hook (can be empty).
-    static void refresh() {
-        Traits::hw_refresh();
-    }
+        //---------------------------------------------------------------------
+        //  refresh()
+        //---------------------------------------------------------------------
+        static void refresh()
+        {
+            Traits::hw_refresh();
+        }
 
-    /// Called from the hardware timer ISR to increment the tick counter.
-    static void on_tick_isr() {
-        ++tick_count_;
-    }
+        //---------------------------------------------------------------------
+        //  on_tick_isr()
+        //---------------------------------------------------------------------
+        static void on_tick_isr()
+        {
+            ++m_tick_count;
+        }
+    
+        //---------------------------------------------------------------------
+        //  ticks()
+        //---------------------------------------------------------------------
+        static uint32_t ticks()
+        {
+            return (m_tick_count);
+        }
 
-    /// Return the current tick count (monotonically increasing).
-    static uint32_t ticks() {
-        return tick_count_;
-    }
+    private:
+        static volatile uint32_t m_tick_count;
+    };
 
-private:
-    static volatile uint32_t tick_count_;
-};
-
-template <typename Traits>
-volatile uint32_t SystemTimer<Traits>::tick_count_{0U};
-
-}  // namespace system
+    template <typename Traits>
+    volatile uint32_t SystemTimer<Traits>::m_tick_count{0U};
+}
