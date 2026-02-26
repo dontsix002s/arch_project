@@ -10,13 +10,11 @@
 #include "board/rev_a/inc/board_rev.h"
 #include "system/inc/system_timer.h"
 
-namespace board {
-namespace rev_a {
-
-void init() {
-    // Start the 1 kHz system timebase (TIM7).
-    system::SystemTimer<SystemTimerTraits>::init();
+namespace board::rev_a
+{
+    void init()
+    {
+        // Start the 1 kHz system timebase (TIM7).
+        system::SystemTimer<SystemTimerTraits>::init();
+    }
 }
-
-}  // namespace rev_a
-}  // namespace board
