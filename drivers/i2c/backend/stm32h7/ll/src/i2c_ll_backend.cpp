@@ -33,7 +33,7 @@
 
 #include "drivers/i2c/backend/stm32h7/ll/inc/i2c_ll_backend.h"
 #include "drivers/i2c/policy/inc/i2c_policy_polling.h"
-#include "drivers/i2c/wait/inc/i2c_wait_baremetal.h"
+#include "drivers/i2c/wait/inc/i2c_wait_timed_busy.h"
 #include "board/rev_a/inc/board_config.h"
 
 namespace i2c {
@@ -157,9 +157,9 @@ static void deinit_gpio_i2c1()
 // linker can find the method bodies.
 
 template struct LlBackend<
-    board::rev_a::kI2c1Periph,
-    i2c::policy::PollingPolicy,
-    i2c::wait::BaremetalWait>;
+    board::rev_a::i2c1::PeriphDesc,
+    board::rev_a::i2c1::Policy,
+    board::rev_a::i2c1::Wait>;
 
 // ---------------------------------------------------------------------------
 // LlBackend::init
