@@ -15,25 +15,22 @@
 #include "system/inc/system_timer.h"
 #include "board/rev_a/inc/board_system_timer_traits.h"
 
-namespace board {
-namespace rev_a {
-namespace time {
+namespace board::rev_a::time
+{
 
-/// Return the current system tick count in milliseconds.
-///
-/// Implemented in board/rev_a/src/board_timebase.cpp.
-uint32_t now_ms();
+    /// Return the current system tick count in milliseconds.
+    ///
+    /// Implemented in board/rev_a/src/board_timebase.cpp.
+    uint32_t now_ms();
 
-/// Clock type satisfying the `Clock` contract for TimedBusyWait.
-///
-/// Pass this type as the Clock template argument:
-/// @code
-/// using Wait = i2c::wait::TimedBusyWait<board::rev_a::time::TimebaseClock>;
-/// @endcode
-struct TimebaseClock {
-    static uint32_t now_ms();
-};
-
-}  // namespace time
-}  // namespace rev_a
-}  // namespace board
+    /// Clock type satisfying the `Clock` contract for TimedBusyWait.
+    ///
+    /// Pass this type as the Clock template argument:
+    /// @code
+    /// using Wait = i2c::wait::TimedBusyWait<board::rev_a::time::TimebaseClock>;
+    /// @endcode
+    struct TimebaseClock
+    {
+        static uint32_t now_ms();
+    };
+}
