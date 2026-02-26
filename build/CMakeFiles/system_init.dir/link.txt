@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsystem_init.a CMakeFiles/system_init.dir/system/src/system_init.cpp.o
+/usr/bin/ranlib libsystem_init.a

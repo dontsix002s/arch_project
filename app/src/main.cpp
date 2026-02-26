@@ -9,20 +9,21 @@
  *
  * Include hierarchy used here (longest-path style as required):
  *   system/inc/system_init.h
- *   board/rev_a/inc/board_config.h        → pulls in LL backend + policy + wait
+ *   board/inc/board.h                     → pulls in active revision config
  *   board/rev_a/inc/pin_map.h
  *   devices/ft6236/inc/ft6236.h           → pulls in i2c_error.h
  *   app/inc/app_config.h
  */
 
 #include "system/inc/system_init.h"
-#include "board/rev_a/inc/board_config.h"
+#include "board/inc/board.h"
 #include "board/rev_a/inc/pin_map.h"
 #include "devices/ft6236/inc/ft6236.h"
 #include "app/inc/app_config.h"
 
 // Convenient type alias for the touch driver on the rev-A board.
-using Touch = devices::Ft6236<board::rev_a::I2c1Bus>;
+// board::i2c1::Bus is a stable alias that always points to the active revision.
+using Touch = devices::Ft6236<board::i2c1::Bus>;
 
 int main() {
     // -----------------------------------------------------------------
@@ -31,7 +32,8 @@ int main() {
     // -----------------------------------------------------------------
 
     // system::init();
-    // board::rev_a::I2c1Bus::init();
+    // board::init();          // starts TIM7 1 kHz timebase + other peripherals
+    // board::i2c1::Bus::init();
     // Touch::init();
 
     // -----------------------------------------------------------------

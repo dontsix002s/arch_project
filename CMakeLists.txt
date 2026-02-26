@@ -30,7 +30,7 @@ target_link_libraries(i2c_policy INTERFACE i2c_core)
 
 # ---------------------------------------------------------------------------
 # INTERFACE library: i2c_wait
-# Wait-strategy headers (baremetal / threadx).
+# Wait-strategy headers (baremetal / threadx / timed_busy).
 # ---------------------------------------------------------------------------
 add_library(i2c_wait INTERFACE)
 target_include_directories(i2c_wait INTERFACE ${REPO_ROOT})
@@ -75,14 +75,16 @@ option(I2C_LL_VENDOR_HEADERS_AVAILABLE
 if(I2C_LL_VENDOR_HEADERS_AVAILABLE)
     add_library(i2c_stm32h7_ll_impl STATIC
         drivers/i2c/backend/stm32h7/ll/src/i2c_ll_backend.cpp
-        drivers/i2c/backend/stm32h7/ll/src/i2c_ll_irq_glue.cpp)
+        drivers/i2c/backend/stm32h7/ll/src/i2c_ll_irq_glue.cpp
+        board/rev_a/src/board_system_timer_stm32h7_ll.cpp)
     target_include_directories(i2c_stm32h7_ll_impl PUBLIC
         ${REPO_ROOT}
         ${REPO_ROOT}/external/cmsis/inc
         ${REPO_ROOT}/external/ll/inc)
     target_link_libraries(i2c_stm32h7_ll_impl PUBLIC
         i2c_stm32h7_ll
-        board_rev_a)
+        board_rev_a
+        system_timer)
 endif()
 
 # ---------------------------------------------------------------------------
@@ -131,6 +133,33 @@ add_library(system_init STATIC system/src/system_init.cpp)
 target_include_directories(system_init PUBLIC ${REPO_ROOT})
 
 # ---------------------------------------------------------------------------
+# INTERFACE library: system_timer
+# Portable system timer abstraction (header-only template).
+# ---------------------------------------------------------------------------
+add_library(system_timer INTERFACE)
+target_include_directories(system_timer INTERFACE ${REPO_ROOT})
+
+# ---------------------------------------------------------------------------
+# INTERFACE library: board_bsp
+# Board-level BSP public headers (board.h, board_irq_priorities.h,
+# board_revision_select.h).  Header-only.
+# ---------------------------------------------------------------------------
+add_library(board_bsp INTERFACE)
+target_include_directories(board_bsp INTERFACE ${REPO_ROOT})
+target_link_libraries(board_bsp INTERFACE board_rev_a system_timer)
+
+# ---------------------------------------------------------------------------
+# STATIC library: board_rev_a_src
+# Revision-A BSP source files that do NOT require vendor headers:
+#   board_init.cpp, board_timebase.cpp
+# ---------------------------------------------------------------------------
+add_library(board_rev_a_src STATIC
+    board/rev_a/src/board_init.cpp
+    board/rev_a/src/board_timebase.cpp)
+target_include_directories(board_rev_a_src PUBLIC ${REPO_ROOT})
+target_link_libraries(board_rev_a_src PUBLIC board_rev_a system_timer)
+
+# ---------------------------------------------------------------------------
 # EXECUTABLE: app
 # Application entry point.
 #
@@ -142,5 +171,6 @@ add_executable(app app/src/main.cpp)
 target_include_directories(app PRIVATE ${REPO_ROOT})
 target_link_libraries(app PRIVATE
     system_init
-    board_rev_a
+    board_bsp
+    board_rev_a_src
     ft6236)
