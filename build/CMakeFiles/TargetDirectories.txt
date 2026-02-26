@@ -1,5 +1,0 @@
-/home/runner/work/arch_project/arch_project/build/CMakeFiles/system_init.dir
-/home/runner/work/arch_project/arch_project/build/CMakeFiles/board_rev_a_src.dir
-/home/runner/work/arch_project/arch_project/build/CMakeFiles/app.dir
-/home/runner/work/arch_project/arch_project/build/CMakeFiles/edit_cache.dir
-/home/runner/work/arch_project/arch_project/build/CMakeFiles/rebuild_cache.dir

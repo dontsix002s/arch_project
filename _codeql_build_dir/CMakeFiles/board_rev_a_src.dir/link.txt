@@ -1,2 +1,0 @@
-/usr/bin/ar qc libboard_rev_a_src.a CMakeFiles/board_rev_a_src.dir/board/rev_a/src/board_init.cpp.o CMakeFiles/board_rev_a_src.dir/board/rev_a/src/board_timebase.cpp.o
-/usr/bin/ranlib libboard_rev_a_src.a
