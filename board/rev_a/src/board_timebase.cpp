@@ -9,18 +9,21 @@
 #include "board/rev_a/inc/board_timebase.h"
 #include "system/inc/system_timer.h"
 
-namespace board {
-namespace rev_a {
-namespace time {
+namespace board::rev_a::time
+{
+    //-------------------------------------------------------------------------
+    //  now_ms()
+    //-------------------------------------------------------------------------
+    uint32_t now_ms()
+    {
+        return (system::SystemTimer<board::rev_a::SystemTimerTraits>::ticks());
+    }
 
-uint32_t now_ms() {
-    return system::SystemTimer<board::rev_a::SystemTimerTraits>::ticks();
+    //-------------------------------------------------------------------------
+    //  TimebaseClock()
+    //-------------------------------------------------------------------------
+    uint32_t TimebaseClock::now_ms()
+    {
+        return (board::rev_a::time::now_ms());
+    }
 }
-
-uint32_t TimebaseClock::now_ms() {
-    return board::rev_a::time::now_ms();
-}
-
-}  // namespace time
-}  // namespace rev_a
-}  // namespace board
