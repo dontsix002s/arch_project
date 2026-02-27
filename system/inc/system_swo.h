@@ -6,17 +6,16 @@
  * confined to system/src/system_swo.cpp.
  *
  * Usage:
- *   system::init();
+ *   stmfw::system::init();
  *   board::init();                          // must run first – changes clocks
- *   system::swo::init(480'000'000U);        // Performance-profile core clock
- *   system::swo::write("boot\n");
+ *   stmfw::system::swo::init(480'000'000U);        // Performance-profile core clock
+ *   stmfw::system::swo::write("boot\n");
  */
 #pragma once
 
 #include <cstdint>
 
-namespace system {
-namespace swo {
+namespace stmfw::system::swo {
 
 /// Initialise the SWO/ITM subsystem.
 ///
@@ -30,5 +29,4 @@ void putc(char c);
 /// Write a NUL-terminated string to ITM stimulus port 0.
 void write(const char* s);
 
-}  // namespace swo
-}  // namespace system
+}  // namespace stmfw::system::swo

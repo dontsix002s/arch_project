@@ -20,16 +20,16 @@ namespace board::rev_a
     void init()
     {
         // 1. Publish the reset-default clock snapshot (64 MHz HSI).
-        system::clocks::set(system::clocks::reset_defaults());
+        stmfw::system::clocks::set(stmfw::system::clocks::reset_defaults());
 
         // 2. Start the system timebase on reset clocks so the BSP can use
         //    board::rev_a::time::now_ms() during the PLL sequence.
-        system::SystemTimer<SystemTimerTraits>::init();
+        stmfw::system::SystemTimer<SystemTimerTraits>::init();
 
         // 3. Configure RCC / PLL for maximum performance.
         board::rev_a::clock::apply(clock::Profile::Performance);
 
         // 4. Reconfigure the timebase prescaler for the new APB1 timer clock.
-        system::SystemTimer<SystemTimerTraits>::refresh();
+        stmfw::system::SystemTimer<SystemTimerTraits>::refresh();
     }
 }

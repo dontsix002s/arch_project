@@ -135,7 +135,7 @@ extern "C" void TIM7_IRQHandler(void)
     if (LL_TIM_IsActiveFlag_UPDATE(TIM7))
     {
         LL_TIM_ClearFlag_UPDATE(TIM7);
-        system::SystemTimer<board::rev_a::SystemTimerTraits>::on_tick_isr();
+        stmfw::system::SystemTimer<board::rev_a::SystemTimerTraits>::on_tick_isr();
     }
 }
 
@@ -152,6 +152,6 @@ extern "C" void TIM6_DAC_IRQHandler(void)
     if (LL_TIM_IsActiveFlag_UPDATE(TIM6))
     {
         LL_TIM_ClearFlag_UPDATE(TIM6);
-        system::SystemTimer<board::rev_a::SystemTimerTraits>::on_tick_isr();
+        stmfw::system::SystemTimer<board::rev_a::SystemTimerTraits>::on_tick_isr();
     }
 }

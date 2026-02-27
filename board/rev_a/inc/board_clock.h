@@ -25,7 +25,7 @@ enum class Profile
 /// Apply the requested clock profile.
 ///
 /// Configures the RCC oscillators, PLL, and bus dividers for the requested
-/// profile and publishes the resulting frequencies via system::clocks::set().
+/// profile and publishes the resulting frequencies via stmfw::system::clocks::set().
 ///
 /// @param profile  The desired clock profile.
 /// @return true if the profile was applied successfully, false otherwise.

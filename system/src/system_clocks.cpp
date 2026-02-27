@@ -2,14 +2,14 @@
  * @file  system/src/system_clocks.cpp
  * @brief System clock snapshot implementation.
  *
- * Implements system::clocks::reset_defaults(), get(), and set().
+ * Implements stmfw::system::clocks::reset_defaults(), get(), and set().
  * The snapshot is stored in a single static variable and updated by the BSP
  * after each RCC/PLL reconfiguration.
  */
 
 #include "system/inc/system_clocks.h"
 
-namespace system::clocks
+namespace stmfw::system::clocks
 {
 
 namespace
@@ -43,4 +43,4 @@ void set(const Clocks& clocks)
     s_clocks = clocks;
 }
 
-}  // namespace system::clocks
+}  // namespace stmfw::system::clocks

@@ -27,8 +27,7 @@
 // Provided via include dirs when vendor headers are enabled.
 #include "stm32h7xx.h"
 
-namespace system {
-namespace swo {
+namespace stmfw::system::swo {
 
 static constexpr uint32_t k_swo_baud = 2'000'000U;
 
@@ -86,19 +85,16 @@ void write(const char* s)
     }
 }
 
-}  // namespace swo
-}  // namespace system
+}  // namespace stmfw::system::swo
 
 #else  // !I2C_LL_VENDOR_HEADERS_AVAILABLE
 
-namespace system {
-namespace swo {
+namespace stmfw::system::swo {
 
 void init(uint32_t /*cpu_hz*/) {}
 void putc(char /*c*/)          {}
 void write(const char* /*s*/)  {}
 
-}  // namespace swo
-}  // namespace system
+}  // namespace stmfw::system::swo
 
 #endif  // I2C_LL_VENDOR_HEADERS_AVAILABLE

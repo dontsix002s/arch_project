@@ -13,10 +13,10 @@
  * #include "system/inc/system_clocks.h"
  *
  * // Initialise to safe reset defaults (64 MHz HSI):
- * system::clocks::set(system::clocks::reset_defaults());
+ * stmfw::system::clocks::set(stmfw::system::clocks::reset_defaults());
  *
  * // Read the current snapshot:
- * auto clks = system::clocks::get();
+ * auto clks = stmfw::system::clocks::get();
  * uint32_t hz = clks.apb1_timer_hz;
  * @endcode
  */
@@ -24,7 +24,7 @@
 
 #include <cstdint>
 
-namespace system::clocks
+namespace stmfw::system::clocks
 {
 
 /// Snapshot of the MCU clock tree frequencies (all values in Hz).
@@ -53,4 +53,4 @@ Clocks get();
 /// the system sees up-to-date frequencies.
 void set(const Clocks& clocks);
 
-}  // namespace system::clocks
+}  // namespace stmfw::system::clocks
