@@ -142,6 +142,22 @@ add_library(system_clocks STATIC system/src/system_clocks.cpp)
 target_include_directories(system_clocks PUBLIC ${REPO_ROOT})
 
 # ---------------------------------------------------------------------------
+# STATIC library: system_swo
+# Minimal SWO/ITM printf-style logger for STM32H750 bring-up.
+#
+# When I2C_LL_VENDOR_HEADERS_AVAILABLE is ON (and CMSIS headers are present
+# under external/cmsis/inc), the real ITM implementation is compiled.
+# Otherwise a no-op stub is compiled so that host builds remain functional.
+# ---------------------------------------------------------------------------
+add_library(system_swo STATIC system/src/system_swo.cpp)
+target_include_directories(system_swo PUBLIC ${REPO_ROOT})
+if(I2C_LL_VENDOR_HEADERS_AVAILABLE)
+    target_compile_definitions(system_swo PUBLIC I2C_LL_VENDOR_HEADERS_AVAILABLE)
+    target_include_directories(system_swo PUBLIC
+        ${REPO_ROOT}/external/cmsis/inc)
+endif()
+
+# ---------------------------------------------------------------------------
 # INTERFACE library: system_timer
 # Portable system timer abstraction (header-only template).
 # ---------------------------------------------------------------------------
@@ -181,6 +197,7 @@ target_include_directories(app PRIVATE ${REPO_ROOT})
 target_link_libraries(app PRIVATE
     system_init
     system_clocks
+    system_swo
     board_bsp
     board_rev_a_src
     ft6236)
