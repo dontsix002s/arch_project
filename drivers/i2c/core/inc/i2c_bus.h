@@ -25,7 +25,7 @@
  *
  * using MyBus = i2c::Bus<
  *     i2c::backend::stm32h7::ll::LlBackend<
- *         board::rev_a::kI2c1Periph,
+ *         stmfw::board::rev_a::kI2c1Periph,
  *         i2c::policy::PollingPolicy,
  *         i2c::wait::BaremetalWait>,
  *     i2c::policy::PollingPolicy>;

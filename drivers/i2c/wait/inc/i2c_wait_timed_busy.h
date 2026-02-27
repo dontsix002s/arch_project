@@ -23,7 +23,7 @@
  * #include "drivers/i2c/wait/inc/i2c_wait_timed_busy.h"
  * #include "board/rev_a/inc/board_timebase.h"
  *
- * using Wait = i2c::wait::TimedBusyWait<board::rev_a::time::TimebaseClock>;
+ * using Wait = i2c::wait::TimedBusyWait<stmfw::board::rev_a::time::TimebaseClock>;
  * @endcode
  *
  * Extension point

@@ -11,7 +11,7 @@
  */
 #pragma once
 
-namespace board::rev_a::clock
+namespace stmfw::board::rev_a::clock
 {
 
 /// Available board clock profiles.
@@ -31,4 +31,4 @@ enum class Profile
 /// @return true if the profile was applied successfully, false otherwise.
 bool apply(Profile profile);
 
-}  // namespace board::rev_a::clock
+}  // namespace stmfw::board::rev_a::clock

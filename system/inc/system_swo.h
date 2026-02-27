@@ -7,7 +7,7 @@
  *
  * Usage:
  *   stmfw::system::init();
- *   board::init();                          // must run first – changes clocks
+ *   stmfw::board::init();                          // must run first – changes clocks
  *   stmfw::system::swo::init(480'000'000U);        // Performance-profile core clock
  *   stmfw::system::swo::write("boot\n");
  */
@@ -20,7 +20,7 @@ namespace stmfw::system::swo {
 /// Initialise the SWO/ITM subsystem.
 ///
 /// @param cpu_hz  Current CPU frequency in Hz (used to configure TPI->ACPR).
-///                Call after board::init() so the clock tree is stable.
+///                Call after stmfw::board::init() so the clock tree is stable.
 void init(uint32_t cpu_hz);
 
 /// Write a single character to ITM stimulus port 0.

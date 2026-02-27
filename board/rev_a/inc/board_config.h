@@ -6,11 +6,11 @@
  *   1. Declares the PeriphDescriptor constants for each on-board I2C bus.
  *   2. Selects the backend type (LL / HAL / CMSIS) and the policy/wait pair.
  *   3. Exposes ready-made type aliases for each peripheral inside per-peripheral
- *      namespaces (e.g. board::rev_a::i2c1).
+ *      namespaces (e.g. stmfw::board::rev_a::i2c1).
  *
  * Application code and device drivers must include board/inc/board.h rather
  * than this header directly.  board.h re-exports the active revision via the
- * board::i2c1 namespace alias so that code never needs to name a revision.
+ * stmfw::board::i2c1 namespace alias so that code never needs to name a revision.
  *
  * Changing the backend
  * --------------------
@@ -28,8 +28,7 @@
 #include "drivers/i2c/wait/inc/i2c_wait_timed_busy.h"
 #include "board/rev_a/inc/board_timebase.h"
 
-namespace board {
-namespace rev_a {
+namespace stmfw::board::rev_a {
 
 // ---------------------------------------------------------------------------
 // I2C1 per-peripheral namespace
@@ -57,7 +56,7 @@ inline constexpr i2c::backend::stm32h7::PeriphDescriptor PeriphDesc = {
 using Policy = i2c::policy::PollingPolicy;
 
 /// Wait strategy: real-time busy-wait backed by the board timebase clock.
-using Wait = i2c::wait::TimedBusyWait<board::rev_a::time::TimebaseClock>;
+using Wait = i2c::wait::TimedBusyWait<stmfw::board::rev_a::time::TimebaseClock>;
 
 /// Concrete LL backend for I2C1.
 using Backend = i2c::backend::stm32h7::ll::LlBackend<PeriphDesc, Policy, Wait>;
@@ -67,5 +66,4 @@ using Bus = i2c::Bus<Backend, Policy>;
 
 }  // namespace i2c1
 
-}  // namespace rev_a
-}  // namespace board
+}  // namespace stmfw::board::rev_a

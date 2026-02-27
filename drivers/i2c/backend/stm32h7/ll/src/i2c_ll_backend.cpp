@@ -157,9 +157,9 @@ static void deinit_gpio_i2c1()
 // linker can find the method bodies.
 
 template struct LlBackend<
-    board::rev_a::i2c1::PeriphDesc,
-    board::rev_a::i2c1::Policy,
-    board::rev_a::i2c1::Wait>;
+    stmfw::board::rev_a::i2c1::PeriphDesc,
+    stmfw::board::rev_a::i2c1::Policy,
+    stmfw::board::rev_a::i2c1::Wait>;
 
 // ---------------------------------------------------------------------------
 // LlBackend::init

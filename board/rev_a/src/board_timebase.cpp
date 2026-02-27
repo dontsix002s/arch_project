@@ -2,21 +2,21 @@
  * @file  board/rev_a/src/board_timebase.cpp
  * @brief Revision-A board timebase implementation.
  *
- * Implements board::rev_a::time::now_ms() and TimebaseClock::now_ms() by
+ * Implements stmfw::board::rev_a::time::now_ms() and TimebaseClock::now_ms() by
  * delegating to stmfw::system::SystemTimer<SystemTimerTraits>::ticks().
  */
 
 #include "board/rev_a/inc/board_timebase.h"
 #include "system/inc/system_timer.h"
 
-namespace board::rev_a::time
+namespace stmfw::board::rev_a::time
 {
     //-------------------------------------------------------------------------
     //  now_ms()
     //-------------------------------------------------------------------------
     uint32_t now_ms()
     {
-        return (stmfw::system::SystemTimer<board::rev_a::SystemTimerTraits>::ticks());
+        return (stmfw::system::SystemTimer<stmfw::board::rev_a::SystemTimerTraits>::ticks());
     }
 
     //-------------------------------------------------------------------------
@@ -24,6 +24,6 @@ namespace board::rev_a::time
     //-------------------------------------------------------------------------
     uint32_t TimebaseClock::now_ms()
     {
-        return (board::rev_a::time::now_ms());
+        return (stmfw::board::rev_a::time::now_ms());
     }
 }

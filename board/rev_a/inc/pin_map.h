@@ -11,9 +11,7 @@
 
 #include <cstdint>
 
-namespace board {
-namespace rev_a {
-namespace pins {
+namespace stmfw::board::rev_a::pins {
 
 // ---------------------------------------------------------------------------
 // I2C1 – connected to the Arduino-compatible header CN7 (Nucleo-H743ZI)
@@ -47,6 +45,4 @@ constexpr uint32_t kFt6236IntPin  = 13U;
 constexpr uint32_t kFt6236RstPort = kGpioC;
 constexpr uint32_t kFt6236RstPin  = 14U;
 
-}  // namespace pins
-}  // namespace rev_a
-}  // namespace board
+}  // namespace stmfw::board::rev_a::pins

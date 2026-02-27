@@ -17,7 +17,7 @@
 #include "board/rev_a/inc/board_system_timer_traits.h"
 #include "system/inc/system_timer.h"
 
-namespace board::rev_a {
+namespace stmfw::board::rev_a {
 
 // ---------------------------------------------------------------------------
 // Timer descriptor resolved at runtime from timer_id.
@@ -120,7 +120,7 @@ void SystemTimerTraits::hw_refresh()
     configure_timer_registers(td.tim, timer_clk_hz());
 }
 
-}  // namespace board::rev_a
+}  // namespace stmfw::board::rev_a
 
 //-----------------------------------------------------------------------------
 // TIM7 IRQ handler
@@ -128,14 +128,14 @@ void SystemTimerTraits::hw_refresh()
 //-----------------------------------------------------------------------------
 extern "C" void TIM7_IRQHandler(void)
 {
-    if (board::rev_a::SystemTimerTraits::timer_id != board::rev_a::SystemTimerTraits::TimerId::Tim7)
+    if (stmfw::board::rev_a::SystemTimerTraits::timer_id != stmfw::board::rev_a::SystemTimerTraits::TimerId::Tim7)
     {
         return;
     }
     if (LL_TIM_IsActiveFlag_UPDATE(TIM7))
     {
         LL_TIM_ClearFlag_UPDATE(TIM7);
-        stmfw::system::SystemTimer<board::rev_a::SystemTimerTraits>::on_tick_isr();
+        stmfw::system::SystemTimer<stmfw::board::rev_a::SystemTimerTraits>::on_tick_isr();
     }
 }
 
@@ -145,13 +145,13 @@ extern "C" void TIM7_IRQHandler(void)
 //-----------------------------------------------------------------------------
 extern "C" void TIM6_DAC_IRQHandler(void)
 {
-    if (board::rev_a::SystemTimerTraits::timer_id != board::rev_a::SystemTimerTraits::TimerId::Tim6)
+    if (stmfw::board::rev_a::SystemTimerTraits::timer_id != stmfw::board::rev_a::SystemTimerTraits::TimerId::Tim6)
     {
         return;
     }
     if (LL_TIM_IsActiveFlag_UPDATE(TIM6))
     {
         LL_TIM_ClearFlag_UPDATE(TIM6);
-        stmfw::system::SystemTimer<board::rev_a::SystemTimerTraits>::on_tick_isr();
+        stmfw::system::SystemTimer<stmfw::board::rev_a::SystemTimerTraits>::on_tick_isr();
     }
 }
