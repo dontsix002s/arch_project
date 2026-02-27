@@ -16,7 +16,7 @@
 #include "board/inc/board_irq_priorities.h"
 #include "system/inc/system_clocks.h"
 
-namespace board::rev_a {
+namespace stmfw::board::rev_a {
 
 struct SystemTimerTraits {
     /// Available hardware timers for the system timebase.
@@ -41,11 +41,11 @@ struct SystemTimerTraits {
     }
 
     /// NVIC priority for the selected timer.
-    static constexpr uint32_t irq_preempt_prio = board::kIrqPrio_SystemTimebase;
+    static constexpr uint32_t irq_preempt_prio = stmfw::board::kIrqPrio_SystemTimebase;
     static constexpr uint32_t irq_sub_prio = 0U;
 
     static void hw_init();
     static void hw_refresh();
 };
 
-}  // namespace board::rev_a
+}  // namespace stmfw::board::rev_a

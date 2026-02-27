@@ -2,7 +2,7 @@
  * @file  board/rev_a/src/board_clock_stm32h7_ll.cpp
  * @brief STM32H750 RCC/PLL clock configuration (LL/CMSIS implementation).
  *
- * Implements board::rev_a::clock::apply() for the STM32H750.
+ * Implements stmfw::board::rev_a::clock::apply() for the STM32H750.
  *
  * This file is the ONLY place in the BSP that includes RCC/PLL vendor headers.
  * All public board headers remain vendor-free.
@@ -35,7 +35,7 @@
 #include "board/rev_a/inc/board_timebase.h"
 #include "system/inc/system_clocks.h"
 
-namespace board::rev_a::clock
+namespace stmfw::board::rev_a::clock
 {
 
 // ---------------------------------------------------------------------------
@@ -104,7 +104,7 @@ static constexpr ProfileParams kHsiParams = {
 /// Return elapsed milliseconds using the board timebase.
 static inline uint32_t now_ms()
 {
-    return board::rev_a::time::now_ms();
+    return stmfw::board::rev_a::time::now_ms();
 }
 
 /// Busy-wait until condition is true or timeout expires.
@@ -266,4 +266,4 @@ bool apply(Profile profile)
     return ok;
 }
 
-}  // namespace board::rev_a::clock
+}  // namespace stmfw::board::rev_a::clock

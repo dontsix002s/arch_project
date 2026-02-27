@@ -18,7 +18,7 @@
  * #include "system/inc/system_timer.h"
  * #include "board/rev_a/inc/board_system_timer_traits.h"
  *
- * using Timer = stmfw::system::SystemTimer<board::rev_a::SystemTimerTraits>;
+ * using Timer = stmfw::system::SystemTimer<stmfw::board::rev_a::SystemTimerTraits>;
  * Timer::init();
  * uint32_t ms = Timer::ticks();
  * @endcode

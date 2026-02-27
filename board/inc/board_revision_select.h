@@ -3,7 +3,7 @@
  * @brief Manual board revision selection.
  *
  * This file selects the active board revision by including its export header
- * and defining the `board::active` namespace alias.
+ * and defining the `stmfw::board::active` namespace alias.
  *
  * How to add a new revision
  * -------------------------
@@ -28,10 +28,10 @@
 
 #if BOARD_REVISION == 0
 #  include "board/rev_a/inc/board_rev.h"
-namespace board {
+namespace stmfw::board {
 /// Alias that always points to the currently selected revision.
 namespace active = rev_a;
-}  // namespace board
+}  // namespace stmfw::board
 #else
 #  error "Unknown BOARD_REVISION value – add a new block in board_revision_select.h"
 #endif

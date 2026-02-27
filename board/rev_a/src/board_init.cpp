@@ -2,7 +2,7 @@
  * @file  board/rev_a/src/board_init.cpp
  * @brief Revision-A board initialisation.
  *
- * Implements board::rev_a::init().  Initialisation order:
+ * Implements stmfw::board::rev_a::init().  Initialisation order:
  *   1. Publish reset-default clock snapshot so that SystemTimer has a valid
  *      frequency before the hardware timer starts.
  *   2. Start SystemTimer on reset clocks so that timeouts work during PLL init.
@@ -15,7 +15,7 @@
 #include "system/inc/system_clocks.h"
 #include "system/inc/system_timer.h"
 
-namespace board::rev_a
+namespace stmfw::board::rev_a
 {
     void init()
     {
@@ -23,11 +23,11 @@ namespace board::rev_a
         stmfw::system::clocks::set(stmfw::system::clocks::reset_defaults());
 
         // 2. Start the system timebase on reset clocks so the BSP can use
-        //    board::rev_a::time::now_ms() during the PLL sequence.
+        //    stmfw::board::rev_a::time::now_ms() during the PLL sequence.
         stmfw::system::SystemTimer<SystemTimerTraits>::init();
 
         // 3. Configure RCC / PLL for maximum performance.
-        board::rev_a::clock::apply(clock::Profile::Performance);
+        stmfw::board::rev_a::clock::apply(clock::Profile::Performance);
 
         // 4. Reconfigure the timebase prescaler for the new APB1 timer clock.
         stmfw::system::SystemTimer<SystemTimerTraits>::refresh();

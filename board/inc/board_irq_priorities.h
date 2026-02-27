@@ -15,9 +15,9 @@
 
 #include <cstdint>
 
-namespace board {
+namespace stmfw::board {
 
 /// NVIC preemption priority for the system timebase timer interrupt (TIM7).
 inline constexpr uint32_t kIrqPrio_SystemTimebase = 2U;
 
-}  // namespace board
+}  // namespace stmfw::board

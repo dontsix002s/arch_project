@@ -5,14 +5,14 @@
  * This is the only BSP header that application code and device drivers should
  * include.  It pulls in the active revision (selected by
  * board/inc/board_revision_select.h) and re-exports the key APIs under stable
- * `board::` namespace aliases so that no code outside the BSP ever needs to
+ * `stmfw::board::` namespace aliases so that no code outside the BSP ever needs to
  * name a specific revision.
  *
  * Exported names
  * --------------
- *   board::init()       – initialise the active board revision
- *   board::time         – namespace alias for board::active::time
- *   board::i2c1         – namespace alias for board::active::i2c1
+ *   stmfw::board::init()       – initialise the active board revision
+ *   stmfw::board::time         – namespace alias for stmfw::board::active::time
+ *   stmfw::board::i2c1         – namespace alias for stmfw::board::active::i2c1
  *
  * Changing the active revision
  * ----------------------------
@@ -23,11 +23,11 @@
 
 #include "board/inc/board_revision_select.h"
 
-namespace board {
+namespace stmfw::board {
 
 /// Initialise the active board revision.
 ///
-/// Delegates to board::active::init() which is implemented in the revision's
+/// Delegates to stmfw::board::active::init() which is implemented in the revision's
 /// board_init.cpp.
 inline void init() {
     active::init();
@@ -39,4 +39,4 @@ namespace time = active::time;
 /// Stable namespace alias for the active revision's I2C1 types.
 namespace i2c1 = active::i2c1;
 
-}  // namespace board
+}  // namespace stmfw::board

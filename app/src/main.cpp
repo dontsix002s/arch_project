@@ -4,9 +4,9 @@
  *
  * Initialisation sequence:
  *   1. stmfw::system::init()         – FPU, clocks, caches, MPU
- *   2. board::init()          – TIM7 1 kHz timebase, peripherals
- *   3. stmfw::system::swo::init()    – SWO/ITM logger (must come after board::init()
- *                               because board::init() changes the clock tree)
+ *   2. stmfw::board::init()    – TIM7 1 kHz timebase, peripherals
+ *   3. stmfw::system::swo::init()    – SWO/ITM logger (must come after stmfw::board::init()
+ *                               because stmfw::board::init() changes the clock tree)
  */
 
 #include "system/inc/system_init.h"
@@ -15,9 +15,9 @@
 
 int main() {
     stmfw::system::init();
-    board::init();
+    stmfw::board::init();
 
-    // SWO init after board::init() – clock tree must be stable first.
+    // SWO init after stmfw::board::init() – clock tree must be stable first.
     // 480 MHz = Performance-profile core clock for STM32H750.
     stmfw::system::swo::init(480'000'000U);
 

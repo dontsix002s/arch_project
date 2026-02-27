@@ -3,7 +3,7 @@
  * @brief Safe stub IRQ handlers for the STM32H7 LL I2C1 backend.
  *
  * Provides CMSIS-named IRQ handler entry points for I2C1.  Each handler
- * checks the corresponding slot in board::rev_a::kI2c1Periph and calls it
+ * checks the corresponding slot in stmfw::board::rev_a::kI2c1Periph and calls it
  * if non-null, otherwise returns immediately.
  *
  * No real IRQ-driven I2C logic is implemented here; these are safe stubs that
@@ -14,14 +14,14 @@
 
 extern "C" void I2C1_EV_IRQHandler()
 {
-    if (board::rev_a::kI2c1Periph.IrqEventHandler) {
-        board::rev_a::kI2c1Periph.IrqEventHandler();
+    if (stmfw::board::rev_a::kI2c1Periph.IrqEventHandler) {
+        stmfw::board::rev_a::kI2c1Periph.IrqEventHandler();
     }
 }
 
 extern "C" void I2C1_ER_IRQHandler()
 {
-    if (board::rev_a::kI2c1Periph.IrqErrorHandler) {
-        board::rev_a::kI2c1Periph.IrqErrorHandler();
+    if (stmfw::board::rev_a::kI2c1Periph.IrqErrorHandler) {
+        stmfw::board::rev_a::kI2c1Periph.IrqErrorHandler();
     }
 }

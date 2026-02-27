@@ -3,10 +3,10 @@
  * @brief Revision-A BSP export header.
  *
  * Includes all revision-A exports (board_config, timebase, timer traits) and
- * declares `board::rev_a::init()`.
+ * declares `stmfw::board::rev_a::init()`.
  *
  * This header is included by board/inc/board_revision_select.h to expose the
- * full revision-A API under the `board::active` namespace alias.
+ * full revision-A API under the `stmfw::board::active` namespace alias.
  *
  * Application / device code must NOT include this header directly.
  * Use board/inc/board.h instead.
@@ -17,8 +17,7 @@
 #include "board/rev_a/inc/board_timebase.h"
 #include "board/rev_a/inc/board_system_timer_traits.h"
 
-namespace board {
-namespace rev_a {
+namespace stmfw::board::rev_a {
 
 /// Initialise the revision-A board hardware.
 ///
@@ -27,5 +26,4 @@ namespace rev_a {
 /// Implemented in board/rev_a/src/board_init.cpp.
 void init();
 
-}  // namespace rev_a
-}  // namespace board
+}  // namespace stmfw::board::rev_a

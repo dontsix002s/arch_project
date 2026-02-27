@@ -13,11 +13,11 @@
  * #include "devices/ft6236/inc/ft6236.h"
  * #include "board/rev_a/inc/board_config.h"
  *
- * using Touch = devices::Ft6236<board::rev_a::I2c1Bus>;
+ * using Touch = devices::Ft6236<stmfw::board::rev_a::I2c1Bus>;
  *
  * Touch::init();
  *
- * devices::Ft6236<board::rev_a::I2c1Bus>::TouchPoint tp{};
+ * devices::Ft6236<stmfw::board::rev_a::I2c1Bus>::TouchPoint tp{};
  * if (Touch::read_touch(tp) == i2c::Error::Ok && tp.touch_count > 0) {
  *     process_touch(tp.points[0].x, tp.points[0].y);
  * }
