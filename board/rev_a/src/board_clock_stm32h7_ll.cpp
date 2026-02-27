@@ -50,7 +50,7 @@ struct ProfileParams
     uint32_t ahb_prescaler;  ///< AHB divider (applied to SYSCLK => HCLK).
     uint32_t apb1_prescaler; ///< APB1 divider.
     uint32_t apb2_prescaler; ///< APB2 divider.
-    // Resulting frequencies published to system::clocks snapshot.
+    // Resulting frequencies published to stmfw::system::clocks snapshot.
     uint32_t sysclk_hz;      ///< SYSCLK (PLL1P output or HSI).
     uint32_t hclk_hz;        ///< HCLK (after AHB prescaler).
     uint32_t apb1_hz;
@@ -253,7 +253,7 @@ bool apply(Profile profile)
 
     if (ok && p != nullptr)
     {
-        system::clocks::set({
+        stmfw::system::clocks::set({
             p->sysclk_hz,
             p->hclk_hz,
             p->apb1_hz,

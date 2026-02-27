@@ -2,13 +2,13 @@
  * @file  system/inc/system_init.h
  * @brief Early MCU system initialisation API.
  *
- * system::init() must be called before any peripheral driver or RTOS service
+ * stmfw::system::init() must be called before any peripheral driver or RTOS service
  * is used.  It sets up the clock tree, enables the FPU, configures the MPU
  * and caches, and initialises the SysTick / RTOS tick source.
  */
 #pragma once
 
-namespace system {
+namespace stmfw::system {
 
 /// Perform early MCU system initialisation.
 ///
@@ -22,4 +22,4 @@ namespace system {
 ///     tick (ThreadX / FreeRTOS).
 void init();
 
-}  // namespace system
+}  // namespace stmfw::system

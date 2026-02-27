@@ -9,7 +9,7 @@ from the STM32H750VB using either a J-Link or ST-Link v2.1 probe.
 
 - VisualGDB 5.6 or later installed in Visual Studio
 - J-Link (recommended) **or** ST-Link v2.1 with SWO pin wired to the target
-- `system::swo::init()` called in `main()` **after** `board::init()`
+- `stmfw::system::swo::init()` called in `main()` **after** `board::init()`
 
 ---
 
@@ -29,7 +29,7 @@ from the STM32H750VB using either a J-Link or ST-Link v2.1 probe.
 4. Set **SWO clock** to `2000000` (2 MHz – must match `k_swo_baud` in
    `system/src/system_swo.cpp`).
 5. Set **CPU clock** to `480000000` (480 MHz – must match the argument passed
-   to `system::swo::init()`).
+   to `stmfw::system::swo::init()`).
 
 ---
 
@@ -52,10 +52,10 @@ clock configuration would yield an incorrect baud rate and garbled output.
 Always preserve this order in `main()`:
 
 ```cpp
-system::init();           // FPU, MPU, caches
+stmfw::system::init();           // FPU, MPU, caches
 board::init();            // clock tree → 480 MHz, TIM7 timebase
-system::swo::init(480'000'000U);  // SWO prescaler based on stable clock
-system::swo::write("boot\n");
+stmfw::system::swo::init(480'000'000U);  // SWO prescaler based on stable clock
+stmfw::system::swo::write("boot\n");
 ```
 
 ---
@@ -67,4 +67,4 @@ system::swo::write("boot\n");
 | No output in ITM console | SWO not wired / wrong pin | Check SWO wire to PB3 |
 | Garbled characters | Speed mismatch | Ensure VisualGDB SWO clock = 2 000 000 and `cpu_hz` arg = 480 000 000 |
 | No output with ST-Link | Older ST-Link firmware | Update ST-Link firmware via STM32CubeProgrammer |
-| Output stops after reset | `swo::init()` not called | Check `main()` calls `system::swo::init()` after `board::init()` |
+| Output stops after reset | `swo::init()` not called | Check `main()` calls `stmfw::system::swo::init()` after `board::init()` |

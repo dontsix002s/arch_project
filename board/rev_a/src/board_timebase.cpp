@@ -3,7 +3,7 @@
  * @brief Revision-A board timebase implementation.
  *
  * Implements board::rev_a::time::now_ms() and TimebaseClock::now_ms() by
- * delegating to system::SystemTimer<SystemTimerTraits>::ticks().
+ * delegating to stmfw::system::SystemTimer<SystemTimerTraits>::ticks().
  */
 
 #include "board/rev_a/inc/board_timebase.h"
@@ -16,7 +16,7 @@ namespace board::rev_a::time
     //-------------------------------------------------------------------------
     uint32_t now_ms()
     {
-        return (system::SystemTimer<board::rev_a::SystemTimerTraits>::ticks());
+        return (stmfw::system::SystemTimer<board::rev_a::SystemTimerTraits>::ticks());
     }
 
     //-------------------------------------------------------------------------
