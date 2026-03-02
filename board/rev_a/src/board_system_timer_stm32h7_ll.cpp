@@ -17,141 +17,188 @@
 #include "board/rev_a/inc/board_system_timer_traits.h"
 #include "system/inc/system_timer.h"
 
+
+//temp =======
+//#include <cassert>
+#include "stm32h7xx_ll_gpio.h"
+
 namespace board::rev_a {
 
-// ---------------------------------------------------------------------------
-// Timer descriptor resolved at runtime from timer_id.
-// ---------------------------------------------------------------------------
+    ///------------------------------------------------------------------------
+    /// Timer descriptor resolved at runtime from timer_id
+    ///------------------------------------------------------------------------
+    struct TimerDesc {
+        TIM_TypeDef* tim;         /// Timer
+        IRQn_Type    irqn;        /// Timer irq
+        uint32_t     rcc_periph;  /// LL_APB1_GRP1_PERIPH_TIMx constant
+    };
 
-struct TimerDesc
-{
-    TIM_TypeDef* tim;
-    IRQn_Type    irqn;
-    uint32_t     rcc_periph;  ///< LL_APB1_GRP1_PERIPH_TIMx constant.
-};
-
-static TimerDesc resolve_timer(SystemTimerTraits::TimerId id)
-{
-    switch (id)
+    //-------------------------------------------------------------------------
+    //  resolve_timer()
+    //-------------------------------------------------------------------------
+    static TimerDesc resolve_timer(SystemTimerTraits::TimerId id)
     {
-        case SystemTimerTraits::TimerId::Tim6:
-            return { TIM6, TIM6_DAC_IRQn, LL_APB1_GRP1_PERIPH_TIM6 };
-        case SystemTimerTraits::TimerId::Tim7:
-        default:
-            return { TIM7, TIM7_IRQn, LL_APB1_GRP1_PERIPH_TIM7 };
-    }
-}
-
-// ---------------------------------------------------------------------------
-// Shared PSC/ARR computation
-// ---------------------------------------------------------------------------
-
-static void configure_timer_registers(TIM_TypeDef* tim, uint32_t clk_hz)
-{
-    static constexpr uint32_t kBaseHz = 1'000'000U;
-
-    // A clock below 1 MHz would produce a zero prescaler (underflow) which
-    // indicates a misconfiguration; assert in debug builds.
-    static_assert(SystemTimerTraits::tick_hz <= kBaseHz,
-                  "tick_hz must not exceed 1 MHz (kBaseHz)");
-    // clk_hz must be >= kBaseHz to produce a valid PSC >= 0.
-    // This is a runtime check; assert if violated.
-    if (clk_hz < kBaseHz)
-    {
-        // Invalid clock; do not reconfigure the timer to avoid corruption.
-        return;
+        switch (id) {
+            case SystemTimerTraits::TimerId::Tim6:
+                return { TIM6, TIM6_DAC_IRQn, LL_APB1_GRP1_PERIPH_TIM6 };
+            case SystemTimerTraits::TimerId::Tim7:
+            default:
+    			return {TIM7, TIM7_IRQn, LL_APB1_GRP1_PERIPH_TIM7};
+	    }
     }
 
-    const uint32_t psc = (clk_hz / kBaseHz) - 1U;
-    const uint32_t arr = (kBaseHz / SystemTimerTraits::tick_hz) - 1U;  // 999 for 1 kHz
-
-    LL_TIM_SetPrescaler(tim, psc);
-    LL_TIM_SetAutoReload(tim, arr);
-    LL_TIM_EnableARRPreload(tim);
-
-    // Force update event so PSC/ARR are taken immediately.
-    LL_TIM_GenerateEvent_UPDATE(tim);
-
-    // Reset counter to ensure first period is exact.
-    LL_TIM_SetCounter(tim, 0U);
-}
-
-// ---------------------------------------------------------------------------
-//  SystemTimerTraits::hw_init()
-// ---------------------------------------------------------------------------
-void SystemTimerTraits::hw_init()
-{
-    const TimerDesc td = resolve_timer(timer_id);
-
-    // Enable peripheral clock.
-    LL_APB1_GRP1_EnableClock(td.rcc_periph);
-
-    // Stop timer while configuring (deterministic).
-    LL_TIM_DisableCounter(td.tim);
-    LL_TIM_DisableIT_UPDATE(td.tim);
-
-    // Configure PSC/ARR using current clock snapshot.
-    configure_timer_registers(td.tim, timer_clk_hz());
-
-    // Clear any pending update flag before enabling the interrupt.
-    LL_TIM_ClearFlag_UPDATE(td.tim);
-    LL_TIM_EnableIT_UPDATE(td.tim);
-
-    // Configure and enable NVIC interrupt.
-    NVIC_SetPriority(td.irqn,
-                     NVIC_EncodePriority(NVIC_GetPriorityGrouping(),
-                                         irq_preempt_prio, irq_sub_prio));
-    NVIC_EnableIRQ(td.irqn);
-
-    // Start the timer.
-    LL_TIM_EnableCounter(td.tim);
-}
-
-// ---------------------------------------------------------------------------
-//  SystemTimerTraits::hw_refresh()
-//  Recomputes PSC/ARR using the current timer_clk_hz() snapshot so that the
-//  1 kHz tick rate is maintained after a clock tree reconfiguration.
-// ---------------------------------------------------------------------------
-void SystemTimerTraits::hw_refresh()
-{
-    const TimerDesc td = resolve_timer(timer_id);
-
-    // Reconfigure registers with updated clock.
-    configure_timer_registers(td.tim, timer_clk_hz());
-}
-
-}  // namespace board::rev_a
-
-//-----------------------------------------------------------------------------
-// TIM7 IRQ handler
-// Only processes the update event when TIM7 is the selected system timebase.
-//-----------------------------------------------------------------------------
-extern "C" void TIM7_IRQHandler(void)
-{
-    if (board::rev_a::SystemTimerTraits::timer_id != board::rev_a::SystemTimerTraits::TimerId::Tim7)
+	//-------------------------------------------------------------------------
+	//  configure_timer_registers()
+    //-------------------------------------------------------------------------
+	static void configure_timer_registers(TIM_TypeDef* tim, uint32_t clk_hz)
     {
-        return;
+        static constexpr uint32_t kBaseHz = 1'000'000U;
+
+        // A clock below 1 MHz would produce a zero prescaler (underflow) which
+        // indicates a misconfiguration; assert in debug builds.
+        static_assert(SystemTimerTraits::tick_hz <= kBaseHz,
+                      "tick_hz must not exceed 1 MHz (kBaseHz)");
+	
+        // clk_hz must be >= kBaseHz to produce a valid PSC >= 0.
+        // This is a runtime check; assert if violated.
+        if (clk_hz < kBaseHz)
+        {
+            // Invalid clock; do not reconfigure the timer to avoid corruption.
+            return;
+        }
+
+        const uint32_t psc = (clk_hz / kBaseHz) - 1U;
+        const uint32_t arr = (kBaseHz / SystemTimerTraits::tick_hz) - 1U;  // 999 for 1 kHz
+
+        LL_TIM_SetPrescaler(tim, psc);
+        LL_TIM_SetAutoReload(tim, arr);
+        LL_TIM_EnableARRPreload(tim);
+
+        // Force update event so PSC/ARR are taken immediately.
+        LL_TIM_GenerateEvent_UPDATE(tim);
+
+        // Reset counter to ensure first period is exact.
+        LL_TIM_SetCounter(tim, 0U);
     }
-    if (LL_TIM_IsActiveFlag_UPDATE(TIM7))
+
+    // ---------------------------------------------------------------------------
+    //  SystemTimerTraits::hw_init()
+    // ---------------------------------------------------------------------------
+    void SystemTimerTraits::hw_init()
     {
-        LL_TIM_ClearFlag_UPDATE(TIM7);
-        stmfw::system::SystemTimer<board::rev_a::SystemTimerTraits>::on_tick_isr();
+        const TimerDesc td = resolve_timer(timer_id);
+
+        // Enable peripheral clock
+        LL_APB1_GRP1_EnableClock(td.rcc_periph);
+
+        // Stop timer while configuring (deterministic)
+		LL_TIM_DisableIT_UPDATE(td.tim);
+        LL_TIM_DisableCounter(td.tim);
+
+        // Configure PSC/ARR using current clock snapshot
+        configure_timer_registers(td.tim, timer_clk_hz());
+
+        // Clear any pending update flag before enabling the interrupt
+        LL_TIM_ClearFlag_UPDATE(td.tim);
+        LL_TIM_EnableIT_UPDATE(td.tim);
+
+        // Configure and enable NVIC interrupt
+        NVIC_SetPriority(td.irqn,
+                         NVIC_EncodePriority(NVIC_GetPriorityGrouping(),
+                         irq_preempt_prio, irq_sub_prio));
+        NVIC_EnableIRQ(td.irqn);
+		
+		
+		
+
+		// ===== temp =====================================================
+		// for degug
+		LL_AHB4_GRP1_EnableClock(LL_AHB4_GRP1_PERIPH_GPIOE);
+
+		LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+		GPIO_InitStruct.Pin = LL_GPIO_PIN_10;
+		GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+		GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+		GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+		GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+		LL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+	    
+	    
+	    
+	    
+		
+		//========================================================
+		
+
+        // Start the timer
+        LL_TIM_EnableCounter(td.tim);
+    }
+
+    //-------------------------------------------------------------------------
+    //  SystemTimerTraits::hw_refresh()
+    //  Recomputes PSC/ARR using the current timer_clk_hz() snapshot so that the
+    //  1 kHz tick rate is maintained after a clock tree reconfiguration.
+    //-------------------------------------------------------------------------
+    void SystemTimerTraits::hw_refresh()
+    {
+        const TimerDesc td = resolve_timer(timer_id);
+
+		// Stop timer while reconfiguring
+		LL_TIM_DisableIT_UPDATE(td.tim);
+		LL_TIM_DisableCounter(td.tim);
+
+        // Reconfigure registers with updated clock
+        configure_timer_registers(td.tim, timer_clk_hz());
+
+		// Clear any pending update flag before enabling the interrupt
+		LL_TIM_ClearFlag_UPDATE(td.tim);
+		LL_TIM_EnableIT_UPDATE(td.tim);
+		
+		// Start the timer
+		LL_TIM_EnableCounter(td.tim);
     }
 }
 
 //-----------------------------------------------------------------------------
 // TIM6 IRQ handler (shared with DAC on STM32H7)
-// Only processes the update event when TIM6 is the selected system timebase.
 //-----------------------------------------------------------------------------
 extern "C" void TIM6_DAC_IRQHandler(void)
 {
-    if (board::rev_a::SystemTimerTraits::timer_id != board::rev_a::SystemTimerTraits::TimerId::Tim6)
+	//if (board::rev_a::SystemTimerTraits::timer_id != board::rev_a::SystemTimerTraits::TimerId::Tim6)
+	//{ return; }
+	
+	if (LL_TIM_IsActiveFlag_UPDATE(TIM6))
+	{
+		LL_TIM_ClearFlag_UPDATE(TIM6);
+		stmfw::system::SystemTimer<board::rev_a::SystemTimerTraits>::on_tick_isr();
+	}
+}
+
+//-----------------------------------------------------------------------------
+// TIM7 IRQ handler
+//-----------------------------------------------------------------------------
+extern "C" void TIM7_IRQHandler(void)
+{
+    //if (board::rev_a::SystemTimerTraits::timer_id != board::rev_a::SystemTimerTraits::TimerId::Tim7)
+    //{ return; }
+	
+    if (LL_TIM_IsActiveFlag_UPDATE(TIM7))
     {
-        return;
-    }
-    if (LL_TIM_IsActiveFlag_UPDATE(TIM6))
-    {
-        LL_TIM_ClearFlag_UPDATE(TIM6);
+        LL_TIM_ClearFlag_UPDATE(TIM7);
         stmfw::system::SystemTimer<board::rev_a::SystemTimerTraits>::on_tick_isr();
+
+		// --  for degug =====
+		if (GPIOE->ODR & 0x0400)
+		{
+			GPIOE->ODR = GPIOE->ODR & (~0x0400);
+		}
+		else
+		{
+			GPIOE->ODR = GPIOE->ODR | 0x0400;
+		}
+		//-------------------------------
+		
     }
 }
+
+
