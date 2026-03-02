@@ -7,40 +7,47 @@
  * after each RCC/PLL reconfiguration.
  */
 
+// -- Includes ------------------------------------
 #include "system/inc/system_clocks.h"
 
-namespace stmfw::system::clocks
-{
 
-namespace
-{
-    /// Reset-default clock snapshot (64 MHz HSI, no prescalers).
-    static constexpr Clocks kResetDefaults = {
-        /* sysclk_hz     = */ 64'000'000U,
-        /* hclk_hz       = */ 64'000'000U,
-        /* apb1_hz       = */ 64'000'000U,
-        /* apb1_timer_hz = */ 64'000'000U,
-        /* apb2_hz       = */ 64'000'000U,
-        /* apb2_timer_hz = */ 64'000'000U,
-    };
+namespace stmfw::system::clocks {
 
-    /// Internal stored snapshot; initialised to reset defaults.
-    static Clocks s_clocks = kResetDefaults;
-}  // namespace
+    namespace {
+		
+	    ///--------------------------------------------------------------
+        /// Reset-default clock snapshot (64 MHz HSI, no prescalers)
+	    ///--------------------------------------------------------------
+		static constexpr Clocks kResetDefaults = {
+			.sysclk_hz     = 64'000'000U,
+			.hclk_hz       = 64'000'000U,
+			.apb1_hz       = 64'000'000U,
+			.apb1_timer_hz = 64'000'000U,
+			.apb2_hz       = 64'000'000U,
+			.apb2_timer_hz = 64'000'000U,
+			.apb3_hz       = 64'000'000U,
+			.apb4_hz       = 64'000'000U,
+        };
 
-Clocks reset_defaults()
-{
-    return kResetDefaults;
+        /// Internal stored snapshot; initialised to reset defaults
+        static Clocks s_clocks = kResetDefaults;
+    }
+
+	//-------------------------------------------------------------------------
+	//  reset_defaults()
+	//-------------------------------------------------------------------------
+    Clocks reset_defaults()
+    { return (kResetDefaults); }
+
+	//-------------------------------------------------------------------------
+	//  get()
+	//-------------------------------------------------------------------------
+    Clocks get()
+    { return (s_clocks); }
+
+	//-------------------------------------------------------------------------
+	//  set()
+	//-------------------------------------------------------------------------
+    void set(const Clocks& clocks)
+    { s_clocks = clocks; }
 }
-
-Clocks get()
-{
-    return s_clocks;
-}
-
-void set(const Clocks& clocks)
-{
-    s_clocks = clocks;
-}
-
-}  // namespace stmfw::system::clocks
