@@ -17,19 +17,37 @@
 
 namespace board::rev_a
 {
+	///------------------------------------------------------------------------
+	/// init()
+	///------------------------------------------------------------------------
     void init()
     {
-        // 1. Publish the reset-default clock snapshot (64 MHz HSI).
+	    // Что сюда может/должно входить - всё, что зависит от разводки, 
+	    // выбранной частотной конфигурации и какая периферия реально подключена	    
+		// Обычно сюда входит:
+		//   - clock tree “профиль платы” PLL / делители
+		//   - выбор конкретного системного таймера (NVIC priority, prescaler)
+	    //   - GPIO + pinmux настройка выводов под I2C / SPI / UART, CS, RESET, IRQ линии тачскрина и т.д.
+	    //   - включение клоков периферии GPIOxEN, I2CxEN, SPIxEN и т.п.(или подготовка,
+	    //     если делаете это в драйверах — но хотя бы “что вообще доступно на плате” решается тут)
+	    //   - init устройств платы(опционально) например, включить питание дисплея, reset внешних микросхем,
+	    //     поднять backlight но “высокоуровневое”(инициализация приложения) лучше оставить app,
+	    //     чтобы board не разрастался 
+	    // Основной критерий: если завтра вы переносите проект на другую плату(rev_b) — меняется в основном тут
+		
+		
+        // 1) Publish the reset-default clock snapshot (64 MHz HSI)
         stmfw::system::clocks::set(stmfw::system::clocks::reset_defaults());
 
-        // 2. Start the system timebase on reset clocks so the BSP can use
+        // 2) Start the system timebase on reset clocks so the BSP can use
         //    board::rev_a::time::now_ms() during the PLL sequence.
         stmfw::system::SystemTimer<SystemTimerTraits>::init();
 
-        // 3. Configure RCC / PLL for maximum performance.
-        board::rev_a::clock::apply(clock::Profile::Performance);
+		// 3) Configure RCC / PLL for maximum performance.
+        board::rev_a::clock::apply(clock::Profile::Balanced);
 
-        // 4. Reconfigure the timebase prescaler for the new APB1 timer clock.
+        // 4) Reconfigure the timebase prescaler for the new APB1 timer clock.
         stmfw::system::SystemTimer<SystemTimerTraits>::refresh();
+	    
     }
 }
