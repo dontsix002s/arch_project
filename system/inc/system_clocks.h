@@ -22,35 +22,41 @@
  */
 #pragma once
 
+// -- Includes ------------------------------------
 #include <cstdint>
 
-namespace stmfw::system::clocks
-{
+namespace stmfw::system::clocks {
+	
+	///------------------------------------------------------------------------
+	/// Snapshot of the MCU clock tree frequencies (all values in Hz)
+	///------------------------------------------------------------------------
+    struct Clocks {
+		uint32_t sysclk_hz;      /// SYSCLK frequency (PLL1P output, HSI, or HSE mux output)
+		uint32_t hclk_hz;        /// AHB / HCLK frequency (after AHB prescaler)
+		uint32_t apb1_hz;        /// APB1 peripheral clock
+		uint32_t apb1_timer_hz;  /// APB1 timer clock (= apb1_hz * 2 when APB1 prescaler > 1)
+		uint32_t apb2_hz;        /// APB2 peripheral clock
+		uint32_t apb2_timer_hz;  /// APB2 timer clock
+	    uint32_t apb3_hz;        /// APB3 peripheral clock
+	    uint32_t apb4_hz;        /// APB4 peripheral clock
+    };
 
-/// Snapshot of the MCU clock tree frequencies (all values in Hz).
-struct Clocks
-{
-    uint32_t sysclk_hz;      ///< SYSCLK frequency (PLL1P output, HSI, or HSE mux output).
-    uint32_t hclk_hz;        ///< AHB / HCLK frequency (after AHB prescaler).
-    uint32_t apb1_hz;        ///< APB1 peripheral clock.
-    uint32_t apb1_timer_hz;  ///< APB1 timer clock (= apb1_hz * 2 when APB1 prescaler > 1).
-    uint32_t apb2_hz;        ///< APB2 peripheral clock.
-    uint32_t apb2_timer_hz;  ///< APB2 timer clock.
-};
+	///------------------------------------------------------------------------
+    /// Return a Clocks snapshot representing the MCU reset defaults.
+    ///
+    /// Assumes the internal 64 MHz HSI oscillator is the clock source with all
+    /// bus dividers at their reset values (no prescalers).
+	///------------------------------------------------------------------------
+    Clocks reset_defaults();
 
-/// Return a Clocks snapshot representing the MCU reset defaults.
-///
-/// Assumes the internal 64 MHz HSI oscillator is the clock source with all
-/// bus dividers at their reset values (no prescalers).
-Clocks reset_defaults();
+    /// Return the currently stored clock snapshot.
+    Clocks get();
 
-/// Return the currently stored clock snapshot.
-Clocks get();
-
-/// Store a new clock snapshot.
-///
-/// Called by the BSP after each RCC/PLL reconfiguration so that the rest of
-/// the system sees up-to-date frequencies.
-void set(const Clocks& clocks);
-
-}  // namespace stmfw::system::clocks
+	///------------------------------------------------------------------------
+    /// Store a new clock snapshot.
+    ///
+    /// Called by the BSP after each RCC/PLL reconfiguration so that the rest of
+    /// the system sees up-to-date frequencies.
+	///------------------------------------------------------------------------
+    void set(const Clocks& clocks);
+}
