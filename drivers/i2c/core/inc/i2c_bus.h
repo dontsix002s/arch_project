@@ -54,10 +54,13 @@ namespace i2c {
 /// All public methods forward directly to Backend's static methods.
 /// Policy is carried as a tag so the backend can select the correct code path
 /// at compile time (e.g. via if constexpr or tag dispatch).
-template <typename Backend, typename Policy>
-struct Bus {
-    /// Initialise the underlying I2C peripheral.
-    static void init() { Backend::init(); }
+	
+	template <typename Backend, typename Policy>
+    struct Bus {
+	    
+	    
+	    /// Initialise the underlying I2C peripheral.
+        static void init() { Backend::init(); }
 
     /// Release the underlying I2C peripheral.
     static void deinit() { Backend::deinit(); }
@@ -81,7 +84,16 @@ struct Bus {
                             uint32_t       timeout_ms = 100U) {
         return Backend::write_read(addr, tx_buf, tx_len, rx_buf, rx_len,
                                    timeout_ms);
-    }
-};
+        }
+	    
+	    
+	    static void on_event_isr() { Backend::on_event_isr(); }
+	    static void on_error_isr() { Backend::on_error_isr(); }
+
+	    // optional for DMA later:
+	    //static void on_dma_tx_isr() { Backend::on_dma_tx_isr(); }
+	    //static void on_dma_rx_isr() { Backend::on_dma_rx_isr(); }
+	    
+    };
 
 }  // namespace i2c
