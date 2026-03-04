@@ -43,9 +43,9 @@
 namespace board::rev_a::i2c1 {
 
 	inline constexpr i2c::backend::stm32h7::PeriphDescriptor PeriphDesc = {
-		.base_address = 0x40005400U,   // I2C1 base on STM32H743ZI
+		.base_address = 0x40005400U, // I2C1 base on STM32H743ZI
 		.instance_index = 0U,
-		.clock_hz = 100'000'000U,  // APB1 clock (placeholder value)        
+		.clock_hz = 100'000'000U, // APB1 clock (placeholder value)        
 	};
 
 	/// Transfer mode policy: polling (no interrupts or DMA)
@@ -70,14 +70,13 @@ namespace board::rev_a::i2c1 {
 namespace board::rev_a::uart1 {
 
 	inline constexpr uart::backend::stm32h7::PeriphDescriptor PeriphDesc = {
-		/* instance       = */ USART1,
-		/* instance_index = */ 0U,
-		/* baud           = */ 115200U,
+		.base_address = 0x40011000U, // USART1 base on STM32H743
+		.instance_index = 0U,
+		.clock_hz = 100'000'000U, // placeholder (APB2), update later from clocks snapshot
+		.baud = 115200U,
 	};
 
 	using Policy = uart::policy::PollingPolicy;
-
-	// Backend + Port
 	using Backend = uart::backend::stm32h7::ll::LlBackend<PeriphDesc, Policy>;
 	using Port = uart::Port<Backend, Policy>;
 
