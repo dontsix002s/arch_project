@@ -16,22 +16,21 @@
  */
 #pragma once
 
-// ---------------------------------------------------------------------------
-// Select active revision
-// ---------------------------------------------------------------------------
-// Set BOARD_REVISION via the compiler command line (-DBOARD_REVISION=1) or
-// leave it unset to default to revision A (value 0).
+ // ---------------------------------------------------------------------------
+ // Select active revision
+ // ---------------------------------------------------------------------------
+ // Set BOARD_REVISION via the compiler command line (-DBOARD_REVISION=1) or
+ // leave it unset to default to revision A (value 0).
 
 #ifndef BOARD_REVISION
 #  define BOARD_REVISION 0
 #endif
 
 #if BOARD_REVISION == 0
-#  include "board/rev_a/inc/board_rev.h"
+#include "board/rev_a/inc/board_rev.h"
 namespace board {
-/// Alias that always points to the currently selected revision.
-namespace active = rev_a;
-}  // namespace board
+    namespace active = rev_a;
+}
 #else
 #  error "Unknown BOARD_REVISION value – add a new block in board_revision_select.h"
 #endif

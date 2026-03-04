@@ -27,63 +27,60 @@
 #include "drivers/i2c/policy/inc/i2c_policy_polling.h"
 #include "drivers/i2c/wait/inc/i2c_wait_timed_busy.h"
 #include "board/rev_a/inc/board_timebase.h"
-//
-namespace board::rev_a {
-//
-//// ---------------------------------------------------------------------------
-//// I2C1 per-peripheral namespace
-//// ---------------------------------------------------------------------------
-//
-	namespace i2c1 {
 
-/// Static descriptor for the I2C1 peripheral on the STM32H743ZI Nucleo board.
-/////
-///// Handler slots are left nullptr here.  The IRQ glue file
-/////   drivers/i2c/backend/stm32h7/ll/src/i2c_ll_irq_glue.cpp
-///// populates them inside LlBackend::init() when an interrupt-driven policy is
-///// selected.
-		inline constexpr i2c::backend::stm32h7::PeriphDescriptor PeriphDesc = {
-				/* base_address   = */ 0x40005400U,   // I2C1 base on STM32H743ZI
-    /* instance_index = */ 0U,
-    /* clock_hz       = */ 100'000'000U,  // APB1 clock (placeholder value)
-    /* IrqEventHandler= */ nullptr,
-    /* IrqErrorHandler= */ nullptr,
-    /* DmaTxHandler   = */ nullptr,
-    /* DmaRxHandler   = */ nullptr,
-        };
-		
-		
-		/// Transfer mode policy: polling (no interrupts or DMA)
-        using Policy = i2c::policy::PollingPolicy;
-		
-		/// Wait strategy: real-time busy-wait backed by the board timebase clock
-		using Wait = i2c::wait::TimedBusyWait<board::rev_a::time::TimebaseClock>;
 
-		/// Concrete LL backend for I2C1
-        using Backend = i2c::backend::stm32h7::ll::LlBackend<PeriphDesc, Policy, Wait>;
 
-        /// Ready-made I2C bus alias for application / device-driver use
-        using Bus = i2c::Bus<Backend, Policy>;
-			
-		inline void on_event_isr() { Bus::on_event_isr(); }
-		inline void on_error_isr() { Bus::on_error_isr(); }
+#include "drivers/uart/backend/stm32h7/common/inc/uart_stm32h7_periph.h"
+#include "drivers/uart/backend/stm32h7/low_layer/inc/uart_ll_backend.h"
+#include "drivers/uart/core/inc/uart_port.h"
+#include "drivers/uart/policy/inc/uart_policy_polling.h"
 
-    }  // namespace i2c1
-	
-	
-	//-------------------------------
-	//
-	//------------------------
-	namespace uart1 {
-		
-		
-		// using Port = uart::Port<Backend>; (или другое)
-		//inline void on_irq_isr() { Port::on_irq_isr(); }  // или Backend::on_irq_isr()
-		
-		
-	}
-	
+ //
 
-		
-		
+ ///----------------------------------------------------------------------------
+ /// I2C1 per-peripheral namespace
+ ///----------------------------------------------------------------------------
+namespace board::rev_a::i2c1 {
+
+	inline constexpr i2c::backend::stm32h7::PeriphDescriptor PeriphDesc = {
+		.base_address = 0x40005400U,   // I2C1 base on STM32H743ZI
+		.instance_index = 0U,
+		.clock_hz = 100'000'000U,  // APB1 clock (placeholder value)        
+	};
+
+	/// Transfer mode policy: polling (no interrupts or DMA)
+	using Policy = i2c::policy::PollingPolicy;
+
+	/// Wait strategy: real-time busy-wait backed by the board timebase clock
+	using Wait = i2c::wait::TimedBusyWait<board::rev_a::time::TimebaseClock>;
+
+	/// Concrete LL backend for I2C1
+	using Backend = i2c::backend::stm32h7::ll::LlBackend<PeriphDesc, Policy, Wait>;
+
+	/// Ready-made I2C bus alias for application / device-driver use
+	using Bus = i2c::Bus<Backend, Policy>;
+
+	inline void on_event_isr() { Bus::on_event_isr(); }
+	inline void on_error_isr() { Bus::on_error_isr(); }
+}
+
+///----------------------------------------------------------------------------
+/// UART1 per-peripheral namespace
+///----------------------------------------------------------------------------
+namespace board::rev_a::uart1 {
+
+	inline constexpr uart::backend::stm32h7::PeriphDescriptor PeriphDesc = {
+		/* instance       = */ USART1,
+		/* instance_index = */ 0U,
+		/* baud           = */ 115200U,
+	};
+
+	using Policy = uart::policy::PollingPolicy;
+
+	// Backend + Port
+	using Backend = uart::backend::stm32h7::ll::LlBackend<PeriphDesc, Policy>;
+	using Port = uart::Port<Backend, Policy>;
+
+	// Stable IRQ entry point (called from board-level glue)
+	inline void on_irq_isr() { Port::on_irq_isr(); }
 }

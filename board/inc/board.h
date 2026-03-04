@@ -25,18 +25,19 @@
 
 namespace board {
 
-/// Initialise the active board revision.
-///
-/// Delegates to board::active::init() which is implemented in the revision's
-/// board_init.cpp.
-inline void init() {
-    active::init();
+    /// Initialise the active board revision
+    ///
+    /// Delegates to board::active::init() which is implemented in the revision's
+    /// board_init.cpp.
+    inline void init()
+    {
+        active::init();
+    }
+
+    /// Stable namespace alias for the active revision's time API
+    namespace time = active::time;
+
+    /// Stable namespace alias for the active revision's I2C1 types.
+    namespace i2c1 = active::i2c1;
+
 }
-
-/// Stable namespace alias for the active revision's time API.
-namespace time = active::time;
-
-/// Stable namespace alias for the active revision's I2C1 types.
-namespace i2c1 = active::i2c1;
-
-}  // namespace board
