@@ -49,12 +49,11 @@
 
 namespace i2c {
 
-/// Generic I2C bus façade.
-///
-/// All public methods forward directly to Backend's static methods.
-/// Policy is carried as a tag so the backend can select the correct code path
-/// at compile time (e.g. via if constexpr or tag dispatch).
-	
+    /// Generic I2C bus façade.
+    ///
+    /// All public methods forward directly to Backend's static methods.
+    /// Policy is carried as a tag so the backend can select the correct code path
+    /// at compile time (e.g. via if constexpr or tag dispatch).
 	template <typename Backend, typename Policy>
     struct Bus {
 	    
@@ -62,27 +61,27 @@ namespace i2c {
 	    /// Initialise the underlying I2C peripheral.
         static void init() { Backend::init(); }
 
-    /// Release the underlying I2C peripheral.
-    static void deinit() { Backend::deinit(); }
+        /// Release the underlying I2C peripheral.
+        static void deinit() { Backend::deinit(); }
 
-    /// Write @p len bytes from @p buf to the device at @p addr.
-    static Error write(uint16_t addr, const uint8_t* buf, std::size_t len,
+        /// Write @p len bytes from @p buf to the device at @p addr.
+        static Error write(uint16_t addr, const uint8_t* buf, std::size_t len,
                        uint32_t timeout_ms = 100U) {
-        return Backend::write(addr, buf, len, timeout_ms);
-    }
+            return Backend::write(addr, buf, len, timeout_ms);
+        }
 
-    /// Read @p len bytes into @p buf from the device at @p addr.
-    static Error read(uint16_t addr, uint8_t* buf, std::size_t len,
+        /// Read @p len bytes into @p buf from the device at @p addr.
+        static Error read(uint16_t addr, uint8_t* buf, std::size_t len,
                       uint32_t timeout_ms = 100U) {
-        return Backend::read(addr, buf, len, timeout_ms);
-    }
+            return Backend::read(addr, buf, len, timeout_ms);
+        }
 
-    /// Write then read with a repeated-START in between.
-    static Error write_read(uint16_t addr,
+        /// Write then read with a repeated-START in between.
+        static Error write_read(uint16_t addr,
                             const uint8_t* tx_buf, std::size_t tx_len,
                             uint8_t*       rx_buf, std::size_t rx_len,
                             uint32_t       timeout_ms = 100U) {
-        return Backend::write_read(addr, tx_buf, tx_len, rx_buf, rx_len,
+            return Backend::write_read(addr, tx_buf, tx_len, rx_buf, rx_len,
                                    timeout_ms);
         }
 	    
@@ -92,8 +91,7 @@ namespace i2c {
 
 	    // optional for DMA later:
 	    //static void on_dma_tx_isr() { Backend::on_dma_tx_isr(); }
-	    //static void on_dma_rx_isr() { Backend::on_dma_rx_isr(); }
-	    
+	    //static void on_dma_rx_isr() { Backend::on_dma_rx_isr(); }	    
     };
 
-}  // namespace i2c
+}

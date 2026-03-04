@@ -33,63 +33,60 @@
 
 #include <cstdint>
 
-namespace i2c {
-namespace backend {
-namespace stm32h7 {
+namespace i2c::backend::stm32h7 {
 
-/// Pointer to a no-argument, no-return ISR delegate function.
-using HandlerFn = void (*)();
 
-/// Static descriptor for one physical I2C peripheral instance.
-///
-/// Declare one constexpr instance per peripheral in the board config and pass
-/// it as a non-type template argument to the backend:
-///
-/// @code
-/// inline constexpr PeriphDescriptor kI2c1Periph = {
-///     .base_address   = 0x40005400U,
-///     .instance_index = 0,
-///     .clock_hz       = 100'000'000U,
-/// };
-///
-/// using I2c1LlBackend = i2c::backend::stm32h7::ll::LlBackend<
-///     kI2c1Periph,
-///     i2c::policy::PollingPolicy,
-///     i2c::wait::BaremetalWait>;
-/// @endcode
-struct PeriphDescriptor {
-    /// Peripheral base address in the MCU memory map.
-    /// Example values (STM32H743):
-    ///   I2C1 = 0x40005400, I2C2 = 0x40005800, I2C3 = 0x40005C00
-    uintptr_t   base_address;
 
-    /// Zero-based instance index (0 = I2C1, 1 = I2C2, …).
-    /// Used by the backend to select the correct IRQ numbers and DMA channels.
-    uint8_t     instance_index;
+    /// Pointer to a no-argument, no-return ISR delegate function.
+    //using HandlerFn = void (*)();
 
-    /// Peripheral input clock in Hz (APB1 clock for STM32H7 I2C peripherals).
-    /// Used by the backend to calculate timing register values.
-    /// Typical value: 100 000 000 (100 MHz on a default STM32H743 clock tree).
-    uint32_t    clock_hz;
+    /// Static descriptor for one physical I2C peripheral instance.
+    ///
+    /// Declare one constexpr instance per peripheral in the board config and pass
+    /// it as a non-type template argument to the backend:
+    ///
+    /// @code
+    /// inline constexpr PeriphDescriptor kI2c1Periph = {
+    ///     .base_address   = 0x40005400U,
+    ///     .instance_index = 0,
+    ///     .clock_hz       = 100'000'000U,
+    /// };
+    ///
+    /// using I2c1LlBackend = i2c::backend::stm32h7::ll::LlBackend<
+    ///     kI2c1Periph,
+    ///     i2c::policy::PollingPolicy,
+    ///     i2c::wait::BaremetalWait>;
+    /// @endcode
+    struct PeriphDescriptor {
+        /// Peripheral base address in the MCU memory map
+        /// Example values (STM32H743):
+        ///   I2C1 = 0x40005400, I2C2 = 0x40005800, I2C3 = 0x40005C00
+        uintptr_t   base_address;
 
-    // -------------------------------------------------------------------------
-    // ISR / DMA handler slots
-    // -------------------------------------------------------------------------
-    // Initially nullptr; assigned by the IRQ glue .cpp during Backend::init().
+        /// Zero-based instance index (0 = I2C1, 1 = I2C2, …)
+        /// Used by the backend to select the correct IRQ numbers and DMA channels
+        uint8_t     instance_index;
 
-    /// Delegate for the I2C event ISR (TC, ADDR, RXNE, TXE, …).
-    HandlerFn   IrqEventHandler;
+        /// Peripheral input clock in Hz (APB1 clock for STM32H7 I2C peripherals)
+        /// Used by the backend to calculate timing register values
+        /// Typical value: 100 000 000 (100 MHz on a default STM32H743 clock tree)
+        uint32_t    clock_hz;
 
-    /// Delegate for the I2C error ISR (BERR, ARLO, NACKF, …).
-    HandlerFn   IrqErrorHandler;
+        // -------------------------------------------------------------------------
+        // ISR / DMA handler slots
+        // -------------------------------------------------------------------------
+        // Initially nullptr; assigned by the IRQ glue .cpp during Backend::init().
 
-    /// Delegate for the DMA Tx stream/channel transfer-complete ISR.
-    HandlerFn   DmaTxHandler;
+        /// Delegate for the I2C event ISR (TC, ADDR, RXNE, TXE, …).
+        //HandlerFn   IrqEventHandler;
 
-    /// Delegate for the DMA Rx stream/channel transfer-complete ISR.
-    HandlerFn   DmaRxHandler;
-};
+        /// Delegate for the I2C error ISR (BERR, ARLO, NACKF, …).
+        //HandlerFn   IrqErrorHandler;
 
-}  // namespace stm32h7
-}  // namespace backend
-}  // namespace i2c
+        /// Delegate for the DMA Tx stream/channel transfer-complete ISR.
+        //HandlerFn   DmaTxHandler;
+
+        /// Delegate for the DMA Rx stream/channel transfer-complete ISR.
+        //HandlerFn   DmaRxHandler;
+    };
+}

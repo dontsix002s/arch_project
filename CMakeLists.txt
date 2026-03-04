@@ -149,7 +149,7 @@ target_include_directories(system_clocks PUBLIC ${REPO_ROOT})
 # under external/cmsis/inc), the real ITM implementation is compiled.
 # Otherwise a no-op stub is compiled so that host builds remain functional.
 # ---------------------------------------------------------------------------
-add_library(system_swo STATIC system/src/system_swo.cpp)
+add_library(system_swo STATIC )
 target_include_directories(system_swo PUBLIC ${REPO_ROOT})
 if(I2C_LL_VENDOR_HEADERS_AVAILABLE)
     target_compile_definitions(system_swo PUBLIC I2C_LL_VENDOR_HEADERS_AVAILABLE)
