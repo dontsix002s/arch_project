@@ -5,14 +5,21 @@
 
 namespace uart::backend::stm32h7 {
 
-	struct PeriphDescriptor
+	struct PinAf
 	{
-		uint32_t  base_address; // e.g. USART1 base: 0x40011000 (STM32H743)
-		uint8_t   instance_index; // 0=USART1, 1=USART2, ...
-		uint32_t  clock_hz; // peripheral input clock (APB1/APB2), placeholder ok for now
-		uint32_t  baud;
-
-		// Later we’ll add pins/clocks/irqn as needed.
+		uint32_t port_index;
+		uint8_t  pin;
+		uint8_t  af;
 	};
 
+	struct PeriphDescriptor
+	{
+		uint32_t usart_base;
+		uint8_t  instance_index;
+		uint32_t clock_hz;
+		uint32_t baud;
+
+		PinAf tx;
+		PinAf rx;
+	};
 }

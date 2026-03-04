@@ -30,6 +30,10 @@
 
 
 
+#include "board/rev_a/inc/pin_map.h"
+#include "mcu/stm32h7/inc/mcu_map.h"
+
+
 #include "drivers/uart/backend/stm32h7/common/inc/uart_stm32h7_periph.h"
 #include "drivers/uart/backend/stm32h7/low_layer/inc/uart_ll_backend.h"
 #include "drivers/uart/core/inc/uart_port.h"
@@ -69,12 +73,32 @@ namespace board::rev_a::i2c1 {
 ///----------------------------------------------------------------------------
 namespace board::rev_a::uart1 {
 
+	//	inline constexpr uart::backend::stm32h7::PeriphDescriptor PeriphDesc = {
+	//		.base_address = 0x40011000U, // USART1 base on STM32H743
+	//		.instance_index = 0U,
+	//		.clock_hz = 100'000'000U, // placeholder (APB2), update later from clocks snapshot
+	//		.baud = 115200U,
+	//	};
+
+
 	inline constexpr uart::backend::stm32h7::PeriphDescriptor PeriphDesc = {
-		.base_address = 0x40011000U, // USART1 base on STM32H743
+		.usart_base = mcu::stm32h750::kUsart1Base,
 		.instance_index = 0U,
-		.clock_hz = 100'000'000U, // placeholder (APB2), update later from clocks snapshot
+		.clock_hz = 100'000'000U,
+		// placeholder APB2
 		.baud = 115200U,
+		.tx = {
+		board::rev_a::pins::kUart1TxPort,
+		board::rev_a::pins::kUart1TxPin,
+		board::rev_a::pins::kUart1TxAf
+	},
+		.rx = {
+		board::rev_a::pins::kUart1RxPort,
+		board::rev_a::pins::kUart1RxPin,
+		board::rev_a::pins::kUart1RxAf
+	},
 	};
+
 
 	using Policy = uart::policy::PollingPolicy;
 	using Backend = uart::backend::stm32h7::ll::LlBackend<PeriphDesc, Policy>;
