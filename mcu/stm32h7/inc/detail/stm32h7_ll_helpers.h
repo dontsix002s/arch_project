@@ -1,14 +1,18 @@
 #pragma once
-#include <cstdint>
 
+// -- Includes --------------------------
+#include <cstdint>
 #include "stm32h7xx.h"
 #include "stm32h7xx_ll_bus.h"
 #include "stm32h7xx_ll_gpio.h"
 
+// включать только в *ll_backend_impl.h !!!
 
 namespace mcu::stm32h7::ll {
 
-
+	///------------------------------------------------------------------------
+	///  gpio_from_port_index()
+	///------------------------------------------------------------------------
 	inline GPIO_TypeDef* gpio_from_port_index(uint32_t idx)
 	{
 		switch (idx)
@@ -25,6 +29,9 @@ namespace mcu::stm32h7::ll {
 		}
 	}
 
+	///------------------------------------------------------------------------
+	///  enable_gpio_clock()
+	///------------------------------------------------------------------------
 	inline void enable_gpio_clock(uint32_t idx)
 	{
 		switch (idx)
@@ -41,10 +48,8 @@ namespace mcu::stm32h7::ll {
 		}
 	}
 
-
-
 	///------------------------------------------------------------------------
-	///
+	///  ll_gpio_af()
 	///------------------------------------------------------------------------
 	inline uint32_t ll_gpio_af(uint8_t af)
 	{
@@ -70,9 +75,11 @@ namespace mcu::stm32h7::ll {
 		}
 	}
 
-	inline uint32_t pin_mask(uint8_t pin) { return (1U << pin); }
-
-
-
-
-} // namespace mcu::stm32h7::ll
+	///------------------------------------------------------------------------
+	///  pin_mask()
+	///------------------------------------------------------------------------
+	inline uint32_t pin_mask(uint8_t pin)
+	{
+		return (1U << pin);
+	}
+}

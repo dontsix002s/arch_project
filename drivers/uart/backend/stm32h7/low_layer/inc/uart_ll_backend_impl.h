@@ -5,7 +5,7 @@
 #include "stm32h7xx_ll_gpio.h"
 #include "stm32h7xx_ll_usart.h"
 
-#include "mcu/stm32h7/inc/low_layer/stm32h7_ll_helpers.h"
+#include "mcu/stm32h7/inc/detail/stm32h7_ll_helpers.h"
 #include "drivers/uart/backend/stm32h7/low_layer/inc/uart_ll_backend.h"
 
 namespace uart::backend::stm32h7::ll {
