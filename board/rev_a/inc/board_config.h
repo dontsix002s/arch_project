@@ -28,40 +28,32 @@
 #include "drivers/i2c/wait/inc/i2c_wait_timed_busy.h"
 #include "board/rev_a/inc/board_timebase.h"
 
-
-
 #include "board/rev_a/inc/pin_map.h"
 #include "mcu/stm32h7/inc/mcu_map.h"
 
-
-#include "drivers/uart/backend/stm32h7/common/inc/uart_stm32h7_periph.h"
+ // UART (B2 split: MCU periph + board cfg)
+#include "drivers/uart/backend/stm32h7/common/inc/uart_stm32h7_mcu_periph.h"
+#include "drivers/uart/backend/stm32h7/common/inc/uart_stm32h7_board_cfg.h"
 #include "drivers/uart/backend/stm32h7/low_layer/inc/uart_ll_backend.h"
 #include "drivers/uart/core/inc/uart_port.h"
 #include "drivers/uart/policy/inc/uart_policy_polling.h"
 
- //
-
- ///----------------------------------------------------------------------------
- /// I2C1 per-peripheral namespace
- ///----------------------------------------------------------------------------
+///----------------------------------------------------------------------------
+/// I2C1 per-peripheral namespace
+///----------------------------------------------------------------------------
 namespace board::rev_a::i2c1 {
 
 	inline constexpr i2c::backend::stm32h7::PeriphDescriptor PeriphDesc = {
-		.base_address = 0x40005400U, // I2C1 base on STM32H743ZI
+		.base_address = 0x40005400U,
+		// I2C1 base on STM32H7
 		.instance_index = 0U,
-		.clock_hz = 100'000'000U, // APB1 clock (placeholder value)        
+		.clock_hz = 100'000'000U,
+		// APB1 clock (placeholder value)
 	};
 
-	/// Transfer mode policy: polling (no interrupts or DMA)
 	using Policy = i2c::policy::PollingPolicy;
-
-	/// Wait strategy: real-time busy-wait backed by the board timebase clock
 	using Wait = i2c::wait::TimedBusyWait<board::rev_a::time::TimebaseClock>;
-
-	/// Concrete LL backend for I2C1
 	using Backend = i2c::backend::stm32h7::ll::LlBackend<PeriphDesc, Policy, Wait>;
-
-	/// Ready-made I2C bus alias for application / device-driver use
 	using Bus = i2c::Bus<Backend, Policy>;
 
 	inline void on_event_isr() { Bus::on_event_isr(); }
@@ -69,40 +61,61 @@ namespace board::rev_a::i2c1 {
 }
 
 ///----------------------------------------------------------------------------
-/// UART1 per-peripheral namespace
+/// UART1 per-peripheral namespace (B2)
 ///----------------------------------------------------------------------------
 namespace board::rev_a::uart1 {
 
-	//	inline constexpr uart::backend::stm32h7::PeriphDescriptor PeriphDesc = {
-	//		.base_address = 0x40011000U, // USART1 base on STM32H743
-	//		.instance_index = 0U,
-	//		.clock_hz = 100'000'000U, // placeholder (APB2), update later from clocks snapshot
-	//		.baud = 115200U,
-	//	};
-
-
-	inline constexpr uart::backend::stm32h7::PeriphDescriptor PeriphDesc = {
+	// MCU static data (does not depend on pins/board)
+	inline constexpr uart::backend::stm32h7::McuPeriph Mcu = {
 		.usart_base = mcu::stm32h750::kUsart1Base,
 		.instance_index = 0U,
+	};
+
+	// Board config (pins + baud + clock)
+	inline constexpr uart::backend::stm32h7::BoardCfg Cfg = {
 		.clock_hz = 100'000'000U,
 		// placeholder APB2
 		.baud = 115200U,
 		.tx = {
 		board::rev_a::pins::kUart1TxPort,
 		board::rev_a::pins::kUart1TxPin,
-		board::rev_a::pins::kUart1TxAf
+		board::rev_a::pins::kUart1TxAf,
 	},
 		.rx = {
 		board::rev_a::pins::kUart1RxPort,
 		board::rev_a::pins::kUart1RxPin,
-		board::rev_a::pins::kUart1RxAf
+		board::rev_a::pins::kUart1RxAf,
 	},
 	};
 
-
 	using Policy = uart::policy::PollingPolicy;
-	using Backend = uart::backend::stm32h7::ll::LlBackend<PeriphDesc, Policy>;
-	using Port = uart::Port<Backend, Policy>;
+	using Backend = uart::backend::stm32h7::ll::LlBackend<Mcu, Policy>;
+	using RawPort = uart::Port<Backend, Policy>;
+
+	// Wrapper Port so callers can keep using board::...::uart1::Port::init()
+	// and we guarantee bind() happens first.
+	struct Port
+	{
+		static void init()
+		{
+			Backend::bind(Cfg);
+			RawPort::init(); // calls Backend::init()
+		}
+
+		static void deinit() { RawPort::deinit(); }
+
+		static uart::Error write(const uint8_t* buf, std::size_t len, uint32_t timeout_ms = 100U)
+		{
+			return RawPort::write(buf, len, timeout_ms);
+		}
+
+		static uart::Error read(uint8_t* buf, std::size_t len, uint32_t timeout_ms = 100U)
+		{
+			return RawPort::read(buf, len, timeout_ms);
+		}
+
+		static void on_irq_isr() { RawPort::on_irq_isr(); }
+	};
 
 	// Stable IRQ entry point (called from board-level glue)
 	inline void on_irq_isr() { Port::on_irq_isr(); }

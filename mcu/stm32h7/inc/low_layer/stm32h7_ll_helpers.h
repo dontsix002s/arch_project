@@ -1,19 +1,13 @@
 #pragma once
 #include <cstdint>
 
-#ifndef STMFW_VENDOR_HEADERS_AVAILABLE
-#define STMFW_VENDOR_HEADERS_AVAILABLE 0
-#endif
-
-#if STMFW_VENDOR_HEADERS_AVAILABLE
 #include "stm32h7xx.h"
 #include "stm32h7xx_ll_bus.h"
 #include "stm32h7xx_ll_gpio.h"
-#endif
+
 
 namespace mcu::stm32h7::ll {
 
-#if STMFW_VENDOR_HEADERS_AVAILABLE
 
 	inline GPIO_TypeDef* gpio_from_port_index(uint32_t idx)
 	{
@@ -47,17 +41,38 @@ namespace mcu::stm32h7::ll {
 		}
 	}
 
-	inline uint32_t pin_mask(uint8_t pin) { return (1U << pin); }
 
+
+	///------------------------------------------------------------------------
+	///
+	///------------------------------------------------------------------------
 	inline uint32_t ll_gpio_af(uint8_t af)
 	{
 		switch (af)
 		{
-		case 7U: return LL_GPIO_AF_7;
-		default: return LL_GPIO_AF_0; // extend as needed
+		case 0:  return (LL_GPIO_AF_0);
+		case 1:  return (LL_GPIO_AF_1);
+		case 2:  return (LL_GPIO_AF_2);
+		case 3:  return (LL_GPIO_AF_3);
+		case 4:  return (LL_GPIO_AF_4);
+		case 5:  return (LL_GPIO_AF_5);
+		case 6:  return (LL_GPIO_AF_6);
+		case 7:  return (LL_GPIO_AF_7);
+		case 8:  return (LL_GPIO_AF_8);
+		case 9:  return (LL_GPIO_AF_9);
+		case 10: return (LL_GPIO_AF_10);
+		case 11: return (LL_GPIO_AF_11);
+		case 12: return (LL_GPIO_AF_12);
+		case 13: return (LL_GPIO_AF_13);
+		case 14: return (LL_GPIO_AF_14);
+		case 15: return (LL_GPIO_AF_15);
+		default: return LL_GPIO_AF_0; // extend as needed //???????
 		}
 	}
 
-#endif
+	inline uint32_t pin_mask(uint8_t pin) { return (1U << pin); }
+
+
+
 
 } // namespace mcu::stm32h7::ll
